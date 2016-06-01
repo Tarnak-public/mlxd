@@ -3,6 +3,7 @@ mlxd
 
 A simple demonstration daemon for the MLX90620/90621 temperature sensors. Based upon the PIIR application by Mike Strean.
 
+Adapted to the MLX90621. The original works onl< qith the 90620.
 ## Installation
 
   Requires Mike McCauley's BCM2835 library. To build, Unzip and run 'make'. The Python demo requires numpy, skimage, cv2 and some other stuff. See the mlxview.py demo 'import' lines for details.
