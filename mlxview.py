@@ -3,7 +3,7 @@
 #Demo code 
 #
 #   simple demonstration script  showing real-time thermal Imaging 
-#   using the MLX90620 16x4 thermopile array and the mlxd daemon
+#   using the MLX90621 16x4 thermopile array and the mlxd daemon
 #
 #   Copyright (C) 2015 Chuck Werbick
 #
@@ -58,7 +58,7 @@ with picamera.PiCamera() as camera:
     camera.start_preview()
 
     # get the temperature array, and align with the image
-    fifo = open('/var/run/mlx90620.sock', 'r')
+    fifo = open('/var/run/mlx90621.sock', 'r')
     # get the whole FIFO
     ir_raw = fifo.read()
     # trim to 128 bytes
