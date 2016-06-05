@@ -108,6 +108,7 @@ with picamera.PiCamera() as camera:
         ir_byte = img_as_ubyte(ir_aligned)
 
         o.update(np.getbuffer(ir_byte))
+        camera.capture('/tmp/stream/pic.jpg')
 
     print('Error! Closing...')
     camera.remove_overlay(o)
