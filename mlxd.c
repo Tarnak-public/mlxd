@@ -1,5 +1,9 @@
 /*
-   simple demonstration daemon for the MLX90620 16x4 thermopile array
+   simple demonstration daemon for the MLX90621 16x4 thermopile array
+   
+   Modified by Todd Erickson for the MLX90621
+   
+   Forked from https://github.com/alphacharlie/mlxd written by Chuck Werbick
 
    Copyright (C) 2015 Chuck Werbick
 
@@ -62,24 +66,24 @@ static struct option const long_options[] =
 };
 
 static int decode_switches (int argc, char **argv);
-int mlx90620_init ();
-int mlx90620_read_eeprom ();
-int mlx90620_write_config (unsigned char *lsb, unsigned char *msb);
-int mlx90620_read_config (unsigned char *lsb, unsigned char *msb);
-int mlx90620_write_trim (char t);
-char mlx90620_read_trim ();
-int mlx90620_por ();
-int mlx90620_set_refresh_hz (int hz);
-int mlx90620_ptat ();
-int mlx90620_cp ();
-float mlx90620_ta ();
-int mlx90620_ir_read ();
+int mlx90621_init ();
+int mlx90621_read_eeprom ();
+int mlx90621_write_config (unsigned char *lsb, unsigned char *msb);
+int mlx90621_read_config (unsigned char *lsb, unsigned char *msb);
+int mlx90621_write_trim (char t);
+char mlx90621_read_trim ();
+int mlx90621_por ();
+int mlx90621_set_refresh_hz (int hz);
+int mlx90621_ptat ();
+int mlx90621_cp ();
+float mlx90621_ta ();
+int mlx90621_ir_read ();
 
 
 char EEPROM[256];
 signed char ir_pixels[128];
 
-char mlxFifo[] = "/var/run/mlx90620.sock";
+char mlxFifo[] = "/var/run/mlx90621.sock";
 
 
 void got_sigint(int sig) {
@@ -142,21 +146,21 @@ main (int argc, char **argv)
 
     printf("\n");
 
-    if ( mlx90620_init() ) {
-        printf("OK, MLX90620 init\n");
+    if ( mlx90621_init() ) {
+        printf("OK, MLX90621 init\n");
     } else {
-        printf("MLX90620 init failed!\n");
+        printf("MLX90621 init failed!\n");
         exit(1);
     }
-    ta = mlx90620_ta();
+    ta = mlx90621_ta();
     printf("Ta reading: %4.8f C\n", ta);
     // If calibration fails then TA will be WAY too high. check and reinitialize if that happens
     while ((ta > 350 || ta != ta) && retryCount < 2) 
     {
     	printf("Ta out of bounds! Max is 350, reading: %4.8f C\n", ta);
     	//out of bounds, reset and check again
-    	mlx90620_init();
-    	ta = mlx90620_ta();
+    	mlx90621_init();
+    	ta = mlx90621_ta();
     	usleep(10000);
 	retryCount++;
     }
@@ -165,7 +169,7 @@ main (int argc, char **argv)
 
     /* To calc parameters */
 
-    vcp = mlx90620_cp();
+    vcp = mlx90621_cp();
     acp = (signed char)EEPROM[0xD4];
     bcp = (signed char)EEPROM[0xD5];
     alphacp = ( EEPROM[0xD7] << 8 ) | EEPROM[0xD6];
@@ -184,12 +188,12 @@ main (int argc, char **argv)
 
         /* POR/Brown Out flag */
 
-        while (!mlx90620_por) {
+        while (!mlx90621_por) {
             sleep(1);
-            mlx90620_init();
+            mlx90621_init();
         }
 
-        if ( !mlx90620_ir_read() ) exit(0);
+        if ( !mlx90621_ir_read() ) exit(0);
         for ( i = 0; i < 4; i++ ) {
             for ( j = 0; j < 16; j++ ) {
 
@@ -230,7 +234,7 @@ main (int argc, char **argv)
 /* Init */
 
 int
-mlx90620_init()
+mlx90621_init()
 {
     if (!bcm2835_init()) return 0;
     bcm2835_i2c_begin();
@@ -238,14 +242,14 @@ mlx90620_init()
     
     //sleep 5ms per datasheet
     usleep(5000);
-    if ( !mlx90620_read_eeprom() ) return 0;
-    if ( !mlx90620_write_trim( EEPROM[0xF7] ) ) return 0;
-    if ( !mlx90620_write_config( &EEPROM[0xF5], &EEPROM[0xF6] ) ) return 0;
+    if ( !mlx90621_read_eeprom() ) return 0;
+    if ( !mlx90621_write_trim( EEPROM[0xF7] ) ) return 0;
+    if ( !mlx90621_write_config( &EEPROM[0xF5], &EEPROM[0xF6] ) ) return 0;
     
-    mlx90620_set_refresh_hz( 4 );
+    mlx90621_set_refresh_hz( 4 );
 
     unsigned char lsb, msb;
-    mlx90620_read_config( &lsb, &msb );
+    mlx90621_read_config( &lsb, &msb );
 
     return 1;
 }
@@ -253,7 +257,7 @@ mlx90620_init()
 /* Read the whole EEPROM */
 
 int
-mlx90620_read_eeprom()
+mlx90621_read_eeprom()
 {
     const unsigned char read_eeprom[] = {
         0x00 // command
@@ -272,7 +276,7 @@ mlx90620_read_eeprom()
 /* Write device configuration value */
 
 int
-mlx90620_write_config(unsigned char *lsb, unsigned char *msb)
+mlx90621_write_config(unsigned char *lsb, unsigned char *msb)
 {
     unsigned char lsb_check = lsb[0] - 0x55;
     unsigned char msb_check = msb[0] - 0x55;
@@ -298,7 +302,7 @@ mlx90620_write_config(unsigned char *lsb, unsigned char *msb)
 /* Reading configuration */
 
 int
-mlx90620_read_config(unsigned char *lsb, unsigned char *msb)
+mlx90621_read_config(unsigned char *lsb, unsigned char *msb)
 {
     unsigned char config[2];
 
@@ -324,7 +328,7 @@ mlx90620_read_config(unsigned char *lsb, unsigned char *msb)
 /* Write the oscillator trimming value */
 
 int
-mlx90620_write_trim(char t)
+mlx90621_write_trim(char t)
 {
     unsigned char trim[] = {
         0x00, // MSB
@@ -354,7 +358,7 @@ mlx90620_write_trim(char t)
 /* Read oscillator trimming register */
 
 char
-mlx90620_read_trim()
+mlx90621_read_trim()
 {
     unsigned char trim_bytes[2];
 
@@ -378,18 +382,18 @@ mlx90620_read_trim()
 /* Return POR/Brown-out flag */
 
 int
-mlx90620_por()
+mlx90621_por()
 {
     unsigned char config_lsb, config_msb;
 
-    mlx90620_read_config( &config_lsb, &config_msb );
+    mlx90621_read_config( &config_lsb, &config_msb );
     return ((config_msb & 0x04) == 0x04);
 }
 
 /* Set IR Refresh rate */
 
 int
-mlx90620_set_refresh_hz(int hz)
+mlx90621_set_refresh_hz(int hz)
 {
     char rate_bits;
     
@@ -432,9 +436,9 @@ mlx90620_set_refresh_hz(int hz)
     }
 
     unsigned char config_lsb, config_msb;
-    if ( !mlx90620_read_config( &config_lsb, &config_msb ) ) return 0;
+    if ( !mlx90621_read_config( &config_lsb, &config_msb ) ) return 0;
     config_lsb = rate_bits;
-    if ( !mlx90620_write_config( &config_lsb, &config_msb ) ) return 0;
+    if ( !mlx90621_write_config( &config_lsb, &config_msb ) ) return 0;
 
     return 1;
 }
@@ -442,7 +446,7 @@ mlx90620_set_refresh_hz(int hz)
 /* Return PTAT (Proportional To Absolute Temperature) */
 
 int
-mlx90620_ptat()
+mlx90621_ptat()
 {
     int ptat;
     unsigned char ptat_bytes[2];
@@ -468,7 +472,7 @@ mlx90620_ptat()
 /* Compensation pixel read */
 
 int
-mlx90620_cp()
+mlx90621_cp()
 {
     int cp;
     signed char VCP_BYTES[2];
@@ -494,9 +498,9 @@ mlx90620_cp()
 /* calculation of absolute chip temperature */
 
 float
-mlx90620_ta()
+mlx90621_ta()
 {
-	int ptat = mlx90620_ptat();
+	int ptat = mlx90621_ptat();
 	char KT_SCALE = 0xD2;
         char VTH_H = 0xDB;
         char VTH_L = 0xDA;
@@ -512,7 +516,7 @@ mlx90620_ta()
 	float v_th = (float) 256 * EEPROM[VTH_H] + EEPROM[VTH_L];
 	float k_t1 = (float) 256 * EEPROM[KT1_H] + EEPROM[KT1_L];
         float k_t2 = (float) 256 * EEPROM[KT2_H] + EEPROM[KT2_L];
-	mlx90620_read_config(&lsb, &msb);
+	mlx90621_read_config(&lsb, &msb);
         resolution = (((int) (msb << 8) | lsb) & 0x30) >> 4;
 
 	if (v_th >= 32768.0)
@@ -535,7 +539,7 @@ mlx90620_ta()
 /* IR data read */
 
 int
-mlx90620_ir_read()
+mlx90621_ir_read()
 {
     const unsigned char ir_whole_frame_read[] = {
         0x02, // command
