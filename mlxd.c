@@ -132,8 +132,9 @@ main (int argc, char **argv)
     int delta_alpha_scale;
     /* Emissivity */
     float epsilon;
+    int retryCount;
 
-
+    retryCount = 0;
     program_name = argv[0];
 
     i = decode_switches (argc, argv);
@@ -148,14 +149,16 @@ main (int argc, char **argv)
         exit(1);
     }
     ta = mlx90620_ta();
+    printf("Ta reading: %4.8f C\n", ta);
     // If calibration fails then TA will be WAY too high. check and reinitialize if that happens
-    while (ta > 350) 
+    while ((ta > 350 || ta != ta) && retryCount < 2) 
     {
     	printf("Ta out of bounds! Max is 350, reading: %4.8f C\n", ta);
     	//out of bounds, reset and check again
     	mlx90620_init();
     	ta = mlx90620_ta();
     	usleep(10000);
+	retryCount++;
     }
 
     printf("Ta = %4.8f C %4.8f F\n\n", ta, ta * (9.0/5.0) + 32.0);
@@ -446,7 +449,7 @@ mlx90620_ptat()
 
     const unsigned char read_ptat[] = {
         0x02, // command
-        0x90, // start address
+        0x40, // start address
         0x00, // address step
         0x01  // number of reads
     };
@@ -472,7 +475,7 @@ mlx90620_cp()
 
     const unsigned char compensation_pixel_read[] = {
         0x02, // command
-        0x91, // start address
+        0x41, // start address
         0x00, // address step
         0x01  // number of reads
     };
@@ -493,34 +496,40 @@ mlx90620_cp()
 float
 mlx90620_ta()
 {
-    int ptat = mlx90620_ptat();
-    int vth = ( EEPROM[0xDB] << 8 ) | EEPROM[0xDA];
-    float kt1 = (( EEPROM[0xDD] << 8 ) | EEPROM[0xDC]) / 1024.0;
-    float kt2 = (( EEPROM[0xDF] << 8 ) | EEPROM[0xDE]) / 1048576.0;
+	int ptat = mlx90620_ptat();
+	char KT_SCALE = 0xD2;
+        char VTH_H = 0xDB;
+        char VTH_L = 0xDA;
+        char KT1_H = 0xDD;
+	char KT1_L = 0xDC;
+        char KT2_H = 0xDF;
+        char KT2_L = 0xDE;
+	unsigned char lsb;
+	unsigned char msb;
+	int resolution;
+	int k_t1_scale = (int) (EEPROM[KT_SCALE] & 0xF0) >> 4;
+	int k_t2_scale = (int) (EEPROM[KT_SCALE] & 0x0F) + 10;
+	float v_th = (float) 256 * EEPROM[VTH_H] + EEPROM[VTH_L];
+	float k_t1 = (float) 256 * EEPROM[KT1_H] + EEPROM[KT1_L];
+        float k_t2 = (float) 256 * EEPROM[KT2_H] + EEPROM[KT2_L];
+	mlx90620_read_config(&lsb, &msb);
+        resolution = (((int) (msb << 8) | lsb) & 0x30) >> 4;
 
-    /* TE Test prints */
-    printf("ptat %d", ptat);
-    printf("\n");
-    printf("vth %d", vth);
-    printf("\n");
-    printf("kt1 %f", kt1);
-    printf("\n");
-    printf("kt2 %f", kt2);
-    printf("\n");
+	if (v_th >= 32768.0)
+		v_th -= 65536.0;
+	v_th = v_th / pow(2, (3 - resolution));
+	
+	if (k_t1 >= 32768.0)
+		k_t1 -= 65536.0;
+	k_t1 /= (pow(2, k_t1_scale) * pow(2, (3 - resolution)));
+	
+	if (k_t2 >= 32768.0)
+		k_t2 -= 65536.0;
+	k_t2 /= (pow(2, k_t2_scale) * pow(2, (3 - resolution)));
+	
+	return ((-k_t1 + sqrt(pow(k_t1, 2) - (4 * k_t2 * (v_th - (float) ptat))))
+			/ (2 * k_t2)) + 25.0;
 
-    printf("k1*K1 %f",kt1*kt1);
-    printf("\n");
-    printf("4.0 * K2 %f",4.0 * kt2);
-    printf("\n");
-    printf("vth - ptat %d",vth - ptat);
-    printf("\n");
-    printf("val: %f", kt1*kt1 - (4.0 * kt2) * (vth - ptat) );
-    printf("\n");
-    printf("sqrt val: %f", sqrt( kt1*kt1 - (4.0 * kt2) * (vth - ptat) ));
-    printf("\n");
-    /*TE Test prints */
-    
-    return ((-kt1 + sqrt( kt1*kt1 - (4 * kt2) * (vth - ptat) )) / (2 * kt2) ) + 25.0;
 }
 
 /* IR data read */
