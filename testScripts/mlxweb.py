@@ -48,6 +48,7 @@ def getImage():
 im = getImage()
 
 with picamera.PiCamera() as camera:
+    camera.led = False
     camera.resolution = (640, 480)
     camera.framerate = 20
     camera.start_preview()
