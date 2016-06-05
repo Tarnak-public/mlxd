@@ -1,7 +1,7 @@
 mlxd
 ==========
 
-A simple demonstration daemon for the MLX90620/90621 temperature sensors. Based upon the PIIR application by Mike Strean.
+A simple demonstration daemon for the MLX90621 temperature sensors. Based upon the PIIR application by Mike Strean and mlxd by Chuck Werbick for the MLX90620.
 
 Adapted to the MLX90621. The original works only with the 90620. Differences can be foumd here https://forum.arduino.cc/index.php?topic=126244.60 or https://github.com/robinvanemden/MLX90621_Arduino_Processing/blob/master/readTemperatures/MLX90621.cpp or in the datasheets https://www.google.de/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&uact=8&ved=0ahUKEwj8jcb3qYbNAhXrIpoKHaehCioQFggdMAA&url=http%3A%2F%2Fwww.melexis.com%2FAsset%2FTransition-from-MLX90620-to-MLX90621-DownloadLink-6446.aspx&usg=AFQjCNFjxtq1G8Ehw6EGenWv3PITfmjszQ&sig2=UjqQlwlO8hOvvK_SHZRe_Q
 
