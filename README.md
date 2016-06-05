@@ -8,12 +8,16 @@ Adapted to the MLX90621. The original works only with the 90620. Differences can
 ## Installation
 
   Requires Mike McCauley's BCM2835 library. To build, Unzip and run 'make'. The Python demo requires numpy, skimage, cv2 and some other stuff. See the mlxview.py demo 'import' lines for details.
+  Follow the installation instructions here for BCM2835: http://www.airspayce.com/mikem/bcm2835/
+  
 
 ## Usage
 
   Run mlxd as root. It will create the file /var/run/mlxd.sock. This FIFO conatins a buffer of the temperature data as an unsigned short int in hundredths of a degree Kelvin. To use it read the FIFO and consume in 128 byte chunks. See mlxview.py for an example.
 
   To test run the mlxview.py script. (Requires the usual math/imaging libraries, cv2, skimage, numpy, etc.)
+  sudo apt-get install -y python-smbus i2c-tools
+  sudo apt-get install -y python-numpy python-scipy python-skimage
 
 ## Contributing
   
