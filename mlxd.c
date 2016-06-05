@@ -497,6 +497,28 @@ mlx90620_ta()
     int vth = ( EEPROM[0xDB] << 8 ) | EEPROM[0xDA];
     float kt1 = (( EEPROM[0xDD] << 8 ) | EEPROM[0xDC]) / 1024.0;
     float kt2 = (( EEPROM[0xDF] << 8 ) | EEPROM[0xDE]) / 1048576.0;
+
+    /* TE Test prints */
+    printf("ptat %d", ptat);
+    printf("\n");
+    printf("vth %d", vth);
+    printf("\n");
+    printf("kt1 %f", kt1);
+    printf("\n");
+    printf("kt2 %f", kt2);
+    printf("\n");
+
+    printf("k1*K1 %f",kt1*kt1);
+    printf("\n");
+    printf("4.0 * K2 %f",4.0 * kt2);
+    printf("\n");
+    printf("vth - ptat %d",vth - ptat);
+    printf("\n");
+    printf("val: %f", kt1*kt1 - (4.0 * kt2) * (vth - ptat) );
+    printf("\n");
+    printf("sqrt val: %f", sqrt( kt1*kt1 - (4.0 * kt2) * (vth - ptat) ));
+    printf("\n");
+    /*TE Test prints */
     
     return ((-kt1 + sqrt( kt1*kt1 - (4 * kt2) * (vth - ptat) )) / (2 * kt2) ) + 25.0;
 }
