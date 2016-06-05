@@ -22,14 +22,13 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program; if not, write to the Free Software Foundation,
 #   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-import socket
 import picamera
 import numpy as np
 import subprocess
 import skimage
 from skimage import io, exposure, transform, img_as_float, img_as_ubyte
-from time import sleep
 import matplotlib.pyplot as plt
+from time import sleep
 
 # IR registration parameters
 ROT = np.deg2rad(90)
@@ -47,14 +46,6 @@ def getImage():
     return skimage.img_as_ubyte(im)
 
 im = getImage()
-
-# Connect a client socket to my_server:8000 (change my_server to the
-# hostname of your server)
-client_socket = socket.socket()
-client_socket.connect(('thermal_server', 8000))
-
-# Make a file-like object out of the connection
-connection = client_socket.makefile('wb')
 
 with picamera.PiCamera() as camera:
     camera.resolution = (640, 480)
@@ -95,6 +86,7 @@ with picamera.PiCamera() as camera:
 
     # update loop
     while True:
+        sleep(0.25)
         ir_raw = fifo.read()
         ir_trimmed = ir_raw[0:128]
         ir = np.frombuffer(ir_trimmed, np.uint16)
@@ -115,9 +107,6 @@ with picamera.PiCamera() as camera:
         ir_byte = img_as_ubyte(ir_aligned)
 
         o.update(np.getbuffer(ir_byte))
-        camera.start_recording(connection, format='h264')
-        camera.wait_recording(1)
-        camera.stop_recording()
 
     print('Error! Closing...')
     camera.remove_overlay(o)
