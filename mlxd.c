@@ -604,16 +604,20 @@ mlx90621_ir_read()
         0x40  // number of reads
     };
     int i;
-
+    printf("TE Test 01 \n");
     bcm2835_i2c_begin();
+    printf("TE Test 02 \n");
     bcm2835_i2c_setSlaveAddress(0x60);
+    printf("TE Test 03 \n");
     if (bcm2835_i2c_write_read_rs((char *)&ir_whole_frame_read, 4, ir_pixels, 128)
         == BCM2835_I2C_REASON_OK) return 1;
-
+    printf("TE Test 04 \n");
     for (i = 0; i < 128; i += 2) {
-            printf("TE Test 01 %d \n", i);
+            printf("TE Test 05 %d \n", i);
             irData[i] = (int) (ir_pixels[i+1] << 8) | ir_pixels[i];
+            printf("TE Test 06 \n");
     }
+    printf("TE Test 07 \n");
     return 0;
 }
 
