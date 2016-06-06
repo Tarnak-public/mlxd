@@ -195,20 +195,11 @@ main (int argc, char **argv)
         }
 
         if ( !mlx90621_ir_read() ) exit(0);
-        for ( i = 0; i < 4; i++ ) {
-            for ( j = 0; j < 16; j++ ) {
+        /* Calculate To */
+        calc_to(ta, vcp);
+            
 
-                x = ((j * 4) + i); /* index */
-                vir = ( ir_pixels[x*2+1] << 8 ) | ir_pixels[x*2];
-                ai = (signed char)EEPROM[x];
-                bi = (signed char)EEPROM[0x40 + x];
-                delta_alpha = EEPROM[0x80 + x];
-
-    		/* Calculate To */
-            calc_to(ta, vcp)
-            }
-
-        }
+        
 
         fd = open(mlxFifo, O_WRONLY);
         write(fd, temperaturesInt, sizeof(temperaturesInt));
@@ -545,12 +536,13 @@ calc_to(float ta,  int vcp)
     char CAL_ACP_L = 0xD3;
     char CAL_BCP = 0xD5;
     char CAL_TGC = 0xD8;
-
-
+    char CAL_A0_H = 0xE1;
+    char CAL_A0_L = 0xE0;
+    char CAL_DELTA_A_SCALE = 0xE3;
 
     float a_ij[64], b_ij[64], alpha_ij[64];
     unsigned char lsb, msb;
-    int resolution;
+    int resolution, i;
     mlx90621_read_config(&lsb, &msb);
     resolution = (((int) (msb << 8) | lsb) & 0x30) >> 4;
     //Calculate variables from EEPROM
@@ -579,7 +571,7 @@ calc_to(float ta,  int vcp)
     if (tgc > 127.0)
         tgc -= 256.0;
     tgc /= 32.0;
-    for (int i = 0; i < 64; i++) {
+    for (i = 0; i < 64; i++) {
         a_ij[i] = ((float) a_common + EEPROM[i] * pow(2, a_i_scale))
                 / pow(2, (3 - resolution));
         b_ij[i] = EEPROM[0x40 + i];
@@ -596,7 +588,7 @@ calc_to(float ta,  int vcp)
         v_ir_comp = v_ir_norm / emissivity;
         temperatures[i] = exp((log(   (v_ir_comp + pow((ta + 273.15), 4))   )/4.0))  
                 - 273.15;
-        temperaturesInt[x] = (unsigned short)((temperatures[i] + 273.15) * 100.0) ;
+        temperaturesInt[i] = (unsigned short)((temperatures[i] + 273.15) * 100.0) ;
     }
 }
 
