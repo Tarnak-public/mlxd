@@ -594,32 +594,21 @@ calc_to(float ta,  int vcp)
 int
 mlx90621_ir_read()
 {
-    unsigned char read_ir[] = {
+    const unsigned char ir_whole_frame_read[] = {
         0x02, // command
         0x00, // start address
         0x01, // address step
-        0x20  // number of reads
+        0x40  // number of reads
     };
-    int j, i;
-    unsigned char ir_bytes[32];
-    
-    for(j=0;j<64;j+=16) {
-        //read_ir[1] = j;
-        bcm2835_i2c_begin();
-        bcm2835_i2c_setSlaveAddress(0x60);
-        printf("TE 01");
-        if (
-            bcm2835_i2c_write_read_rs((char *)&read_ir, 4, (char *)&ir_bytes, 32)
-            == BCM2835_I2C_REASON_OK
-            ) return 1;
-         printf("TE 02");
-        for (i = 0; i < 32; i+=2) {
-            printf("TE 03");
-            irData[j+i] = (int) (ir_bytes[i+1] << 8) | ir_bytes[i];
-            printf("irdata index: %d  value: %d \n", j+i, irData[j+i]);
-            printf("TE 04");
-        }
-        printf("TE 05");
+    int i;
+
+    bcm2835_i2c_begin();
+    bcm2835_i2c_setSlaveAddress(0x60);
+    if (bcm2835_i2c_write_read_rs((char *)&ir_whole_frame_read, 4, ir_pixels, 128)
+        == BCM2835_I2C_REASON_OK) return 1;
+
+    for (i = 0; i < 128; i+=2) {
+            irData[i] = (int) (ir_pixels[i+1] << 8) | ir_pixels[i];
     }
     return 0;
 }
