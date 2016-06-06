@@ -83,6 +83,7 @@ void calc_to(float ta,  int vcp);
 
 char EEPROM[256];
 signed char ir_pixels[128];
+int irData[64];
 
 char mlxFifo[] = "/var/run/mlx90621.sock";
 
@@ -598,20 +599,28 @@ calc_to(float ta,  int vcp)
 int
 mlx90621_ir_read()
 {
-    const unsigned char ir_whole_frame_read[] = {
+    unsigned char read_ir[] = {
         0x02, // command
         0x00, // start address
         0x01, // address step
-        0x40  // number of reads
+        0x20  // number of reads
     };
+    int j, i;
+    char hex[10];
+    unsigned char ir_bytes[2];
 
-    bcm2835_i2c_begin();
-    bcm2835_i2c_setSlaveAddress(0x60);
-    if (
-        bcm2835_i2c_write_read_rs((char *)&ir_whole_frame_read, 4, ir_pixels, 128)
-        == BCM2835_I2C_REASON_OK
-        ) return 1;
-
+    for(j=0;j<64;j+=16) {
+        sprintf(&hex, "%x", j);
+        bcm2835_i2c_begin();
+        bcm2835_i2c_setSlaveAddress(0x60);
+        if (
+            bcm2835_i2c_write_read_rs((char *)&read_ptat, 4, (char *)&ir_bytes, 32)
+            == BCM2835_I2C_REASON_OK
+            ) return 1;
+        for (i = 0; i < 16; i++) {
+            irData[j+i] = (int) (ir_bytes[1] << 8) | ir_bytes[0];
+        }
+    }
     return 0;
 }
 
