@@ -29,6 +29,7 @@ import skimage
 from skimage import io, exposure, transform, img_as_float, img_as_ubyte
 import matplotlib.pyplot as plt
 from time import sleep
+from pprint import pprint
 
 # IR registration parameters
 ROT = np.deg2rad(90)
@@ -53,6 +54,7 @@ def get_overlay(fifo):
     ir_trimmed = ir_raw[0:128]
     # go all numpy on it
     ir = np.frombuffer(ir_trimmed, np.uint16)
+    pprint(ir)
     # set the array shape to the sensor shape (16x4)
     ir = ir.reshape((16, 4))[::-1, ::-1]
     ir = img_as_float(ir)
