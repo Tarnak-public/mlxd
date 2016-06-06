@@ -614,7 +614,7 @@ mlx90621_ir_read()
     if (!bcm2835_i2c_write_read_rs((char *)&ir_whole_frame_read, 4, ir_pixels, 128)
         == BCM2835_I2C_REASON_OK) return 0;
     for (i = 0; i < 128; i += 2) {
-            j = i/2
+            j = i/2;
             irData[j] = (int) (ir_pixels[i+1] << 8) | ir_pixels[i];
             printf("TE Test index: %d value: %d \n", j, irData[j]);
     }
