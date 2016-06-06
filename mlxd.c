@@ -170,7 +170,6 @@ main (int argc, char **argv)
     printf("Ta = %4.8f C %4.8f F\n\n", ta, ta * (9.0/5.0) + 32.0);
 
     /* To calc parameters */
-    printf("TE 1");
     vcp = mlx90621_cp();
     acp = (signed char)EEPROM[0xD4];
     bcp = (signed char)EEPROM[0xD5];
@@ -181,7 +180,6 @@ main (int argc, char **argv)
     alpha0_scale = EEPROM[0xE2];
     delta_alpha_scale = EEPROM[0xE3];
     epsilon = (( EEPROM[0xE5] << 8 ) | EEPROM[0xE4] ) / 32768.0;
-    printf("TE 2");
 
 
     /* do the work */
@@ -194,15 +192,10 @@ main (int argc, char **argv)
             sleep(1);
             mlx90621_init();
         }
-        printf("TE 3");
         if ( !mlx90621_ir_read() ) exit(0);
-        printf("TE 4");
+
         /* Calculate To */
         calc_to(ta, vcp);
-        printf("TE 5");
-            
-
-        
 
         fd = open(mlxFifo, O_WRONLY);
         write(fd, temperaturesInt, sizeof(temperaturesInt));
@@ -613,23 +606,23 @@ mlx90621_ir_read()
     unsigned char ir_bytes[2];
 
     for(j=0;j<64;j+=16) {
-        printf("test0");
+        printf("test0 \n");
         sprintf(hexStr, "%x", j);
         sscanf(hexStr, "%c", &hex);
-        printf("test1");
+        printf("test1 %c \n", hex);
         read_ir[1] = hex;
         bcm2835_i2c_begin();
         bcm2835_i2c_setSlaveAddress(0x60);
-        printf("test2");
+        printf("test2 \n");
         if (
             bcm2835_i2c_write_read_rs((char *)&read_ir, 4, (char *)&ir_bytes, 32)
             == BCM2835_I2C_REASON_OK
             ) return 1;
-        printf("test3");
+        printf("test3 \n");
         for (i = 0; i < 16; i++) {
             irData[j+i] = (int) (ir_bytes[1] << 8) | ir_bytes[0];
         }
-        printf("test4");
+        printf("test4 \n");
     }
     return 0;
 }
