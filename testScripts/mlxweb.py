@@ -45,16 +45,8 @@ def getImage():
     im = exposure.equalize_hist(im)
     return skimage.img_as_ubyte(im)
 
-im = getImage()
 
-with picamera.PiCamera() as camera:
-    camera.led = False
-    camera.resolution = (640, 480)
-    camera.framerate = 20
-    camera.start_preview()
-
-    # get the temperature array, and align with the image
-    fifo = open('/var/run/mlx90621.sock', 'r')
+def get_overlay(fifo):
     # get the whole FIFO
     ir_raw = fifo.read()
     # trim to 128 bytes
@@ -82,33 +74,26 @@ with picamera.PiCamera() as camera:
         rgb_img, tform.inverse, mode='constant', output_shape=im.shape)
     # turn it back into a ubyte so it'll display on the preview overlay
     ir_byte = img_as_ubyte(ir_aligned)
-    # add the overlay
-    o = camera.add_overlay(np.getbuffer(ir_byte), layer=3, alpha=90)
+    # return buffer
+    return np.getbuffer(ir_byte)
+
+
+im = getImage()
+
+with picamera.PiCamera() as camera:
+    camera.led = False
+    camera.resolution = (640, 480)
+    camera.framerate = 20
+    camera.start_preview()
+
+    # get the temperature array, and align with the image
+    fifo = open('/var/run/mlx90621.sock', 'r')
+    o = camera.add_overlay(get_overlay(fifo), layer=3, alpha=90)
 
     # update loop
     while True:
         sleep(0.25)
-        ir_raw = fifo.read()
-        ir_trimmed = ir_raw[0:128]
-        ir = np.frombuffer(ir_trimmed, np.uint16)
-        ir = ir.reshape((16, 4))[::-1, ::-1]
-        ir = img_as_float(ir)
-        p2, p98 = np.percentile(ir, (2, 98))
-        ir = exposure.rescale_intensity(ir, in_range=(p2, p98))
-        ir = exposure.equalize_hist(ir)
-
-        cmap = plt.get_cmap('spectral')
-        rgba_img = cmap(ir)
-        rgb_img = np.delete(rgba_img, 3, 2)
-        # align the IR array with the image
-        tform = transform.AffineTransform(
-            scale=SCALE, rotation=ROT, translation=OFFSET)
-        ir_aligned = transform.warp(
-            rgb_img, tform.inverse, mode='constant', output_shape=im.shape)
-        ir_byte = img_as_ubyte(ir_aligned)
-
-        o.update(np.getbuffer(ir_byte))
-        o.capture('/tmp/stream/pic.jpg')
+        o.update(get_overlay(fifo))
 
     print('Error! Closing...')
     camera.remove_overlay(o)
