@@ -606,12 +606,14 @@ mlx90621_ir_read()
         0x20  // number of reads
     };
     int j, i;
-    //char hex[10];
+    char hexStr[10];
+    unsigned char hex;
     unsigned char ir_bytes[2];
 
     for(j=0;j<64;j+=16) {
-        //sprintf(hex, "%x", j);
-        read_ir[1] = (char) j;
+        sprintf(hexStr, "%x", j);
+        sscanf(hexStr, "%c", &hex);
+        read_ir[1] = hex;
         bcm2835_i2c_begin();
         bcm2835_i2c_setSlaveAddress(0x60);
         if (
