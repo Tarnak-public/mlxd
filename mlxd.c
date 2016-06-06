@@ -611,7 +611,7 @@ mlx90621_ir_read()
 
     for(j=0;j<64;j+=16) {
         //sprintf(hex, "%x", j);
-        read_ir[1] = j;
+        read_ir[1] = (char) j;
         bcm2835_i2c_begin();
         bcm2835_i2c_setSlaveAddress(0x60);
         if (
