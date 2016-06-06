@@ -138,7 +138,7 @@ main (int argc, char **argv)
     int delta_alpha_scale;
     /* Emissivity */
     float epsilon;
-    int retryCount;
+    int retryCount, mlxReadVal;
 
     retryCount = 0;
     program_name = argv[0];
@@ -193,7 +193,9 @@ main (int argc, char **argv)
             mlx90621_init();
         }
         printf("TE Test 00 \n");
-        if ( !mlx90621_ir_read() ) exit(0);
+        mlxReadVal = mlx90621_ir_read()
+        printf("TE Test 07 %d \n", mlxReadVal);
+        if ( !mlxReadVal ) exit(0);
         printf("TE Test 10 \n");
 
         /* Calculate To */
