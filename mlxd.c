@@ -193,7 +193,7 @@ main (int argc, char **argv)
             mlx90621_init();
         }
         printf("TE Test 00 \n");
-        mlxReadVal = mlx90621_ir_read()
+        mlxReadVal = mlx90621_ir_read();
         printf("TE Test 07 %d \n", mlxReadVal);
         if ( !mlxReadVal ) exit(0);
         printf("TE Test 10 \n");
