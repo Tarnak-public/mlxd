@@ -611,6 +611,7 @@ mlx90621_ir_read()
     unsigned char ir_bytes[2];
 
     for(j=0;j<64;j+=16) {
+        printf("test0");
         sprintf(hexStr, "%x", j);
         sscanf(hexStr, "%c", &hex);
         printf("test1");
