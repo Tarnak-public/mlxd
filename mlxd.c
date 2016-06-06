@@ -78,7 +78,7 @@ int mlx90621_ptat ();
 int mlx90621_cp ();
 float mlx90621_ta ();
 int mlx90621_ir_read ();
-void calc_to();
+void calc_to(float ta,  int vcp);
 
 
 char EEPROM[256];
@@ -566,7 +566,7 @@ calc_to(float ta,  int vcp)
     float a_cp = (float) 256 * EEPROM[CAL_ACP_H] + EEPROM[CAL_ACP_L];
     float b_cp = (float) EEPROM[CAL_BCP];
     float tgc = (float) EEPROM[CAL_TGC];
-    float v_cp_off_comp = (float) vcp - (a_cp + b_cp * (Tambient - 25.0));
+    float v_cp_off_comp = (float) vcp - (a_cp + b_cp * (ta - 25.0));
     float v_ir_off_comp, v_ir_tgc_comp, v_ir_norm, v_ir_comp;
     if (a_common >= 32768)
         a_common -= 65536;
@@ -586,7 +586,7 @@ calc_to(float ta,  int vcp)
         if (b_ij[i] > 127)
             b_ij[i] -= 256;
         b_ij[i] = b_ij[i] / (pow(2, b_i_scale) * pow(2, (3 - resolution)));
-        v_ir_off_comp = irData[i] - (a_ij[i] + b_ij[i] * (Tambient - 25.0));
+        v_ir_off_comp = irData[i] - (a_ij[i] + b_ij[i] * (ta - 25.0));
         v_ir_tgc_comp = v_ir_off_comp - tgc * v_cp_off_comp;
         alpha_ij[i] = ((256 * EEPROM[CAL_A0_H] + EEPROM[CAL_A0_L])     
                 / pow(2, EEPROM[CAL_A0_SCALE]));                              
@@ -594,7 +594,7 @@ calc_to(float ta,  int vcp)
         alpha_ij[i] = alpha_ij[i] / pow(2, 3 - resolution);                                 
         v_ir_norm = v_ir_tgc_comp / (alpha_ij[i] - tgc * alpha_cp);
         v_ir_comp = v_ir_norm / emissivity;
-        temperatures[i] = exp((log(   (v_ir_comp + pow((Tambient + 273.15), 4))   )/4.0))  
+        temperatures[i] = exp((log(   (v_ir_comp + pow((ta + 273.15), 4))   )/4.0))  
                 - 273.15;
         temperaturesInt[x] = (unsigned short)((temperatures[i] + 273.15) * 100.0) ;
     }
