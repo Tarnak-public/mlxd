@@ -170,7 +170,7 @@ main (int argc, char **argv)
     printf("Ta = %4.8f C %4.8f F\n\n", ta, ta * (9.0/5.0) + 32.0);
 
     /* To calc parameters */
-
+    printf("TE 1");
     vcp = mlx90621_cp();
     acp = (signed char)EEPROM[0xD4];
     bcp = (signed char)EEPROM[0xD5];
@@ -181,7 +181,7 @@ main (int argc, char **argv)
     alpha0_scale = EEPROM[0xE2];
     delta_alpha_scale = EEPROM[0xE3];
     epsilon = (( EEPROM[0xE5] << 8 ) | EEPROM[0xE4] ) / 32768.0;
-
+    printf("TE 2");
 
 
     /* do the work */
@@ -194,10 +194,12 @@ main (int argc, char **argv)
             sleep(1);
             mlx90621_init();
         }
-
+        printf("TE 3");
         if ( !mlx90621_ir_read() ) exit(0);
+        printf("TE 4");
         /* Calculate To */
         calc_to(ta, vcp);
+        printf("TE 5");
             
 
         
