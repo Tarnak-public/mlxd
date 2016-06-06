@@ -195,7 +195,10 @@ main (int argc, char **argv)
         printf("TE Test 00 \n");
         mlxReadVal = mlx90621_ir_read();
         printf("TE Test 07 %d \n", mlxReadVal);
-        if ( !mlxReadVal ) exit(0);
+        if ( !mlxReadVal ){
+            printf("Could not read IR values \n");
+            exit(0);
+        }
         printf("TE Test 10 \n");
 
         /* Calculate To */
@@ -611,8 +614,8 @@ mlx90621_ir_read()
     printf("TE Test 02 \n");
     bcm2835_i2c_setSlaveAddress(0x60);
     printf("TE Test 03 \n");
-    if (bcm2835_i2c_write_read_rs((char *)&ir_whole_frame_read, 4, ir_pixels, 128)
-        == BCM2835_I2C_REASON_OK) return 1;
+    if (!bcm2835_i2c_write_read_rs((char *)&ir_whole_frame_read, 4, ir_pixels, 128)
+        == BCM2835_I2C_REASON_OK) return 0;
     printf("TE Test 04 \n");
     for (i = 0; i < 128; i += 2) {
             printf("TE Test 05 %d \n", i);
@@ -620,7 +623,7 @@ mlx90621_ir_read()
             printf("TE Test 06 \n");
     }
     printf("TE Test 07 \n");
-    return 0;
+    return 1;
 }
 
 
