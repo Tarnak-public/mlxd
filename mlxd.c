@@ -610,7 +610,7 @@ mlx90621_ir_read()
         sprintf(hexStr, "%x", j);
         sscanf(hexStr, "%c", &hex);
         printf("test1 %c \n", hex);
-        read_ir[1] = hex;
+        //read_ir[1] = hex;
         bcm2835_i2c_begin();
         bcm2835_i2c_setSlaveAddress(0x60);
         printf("test2 \n");
