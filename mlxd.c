@@ -78,6 +78,7 @@ int mlx90621_ptat ();
 int mlx90621_cp ();
 float mlx90621_ta ();
 int mlx90621_ir_read ();
+void calc_to();
 
 
 char EEPROM[256];
@@ -204,16 +205,7 @@ main (int argc, char **argv)
                 delta_alpha = EEPROM[0x80 + x];
 
     		/* Calculate To */
-
-        	vcp_off_comp = (float)vcp - ( acp + (bcp / pow(2,EEPROM[217])) * (ta - 25.0)); //256
-        	vir_off_comp = (float)vir - ( ai + (bi / pow(2,EEPROM[217])) * (ta - 25.0)); //* 256
-        	vir_tgc_comp = vir_off_comp - (tgc / 32) * vcp_off_comp;
-        	vir_compensated = vir_tgc_comp / epsilon;
-	        alpha = ((alpha0 - (tgc / 32.0) * alphacp) / pow(2, alpha0_scale)) + delta_alpha / pow(2, delta_alpha_scale);
-	        to = pow(((vir_compensated / alpha) + pow((ta + 273.15), 4)), 1/4.0) - 273.15;
-	        temperaturesInt[x] = (unsigned short)((to + 273.15) * 100.0) ; //give back as Kelvin (hundtredths of degree) so it can be unsigned...
-	        temperatures[x] = to;
-
+            calc_to(ta, vcp)
             }
 
         }
@@ -492,6 +484,8 @@ mlx90621_cp()
         ) return 0;
 
     cp = ( VCP_BYTES[1] << 8 ) | VCP_BYTES[0];
+    if (cp >= 32768)
+        cp -= 65536;
     return cp;
 }
 
@@ -502,22 +496,21 @@ mlx90621_ta()
 {
 	int ptat = mlx90621_ptat();
 	char KT_SCALE = 0xD2;
-        char VTH_H = 0xDB;
-        char VTH_L = 0xDA;
-        char KT1_H = 0xDD;
+    char VTH_H = 0xDB;
+    char VTH_L = 0xDA;
+    char KT1_H = 0xDD;
 	char KT1_L = 0xDC;
-        char KT2_H = 0xDF;
-        char KT2_L = 0xDE;
-	unsigned char lsb;
-	unsigned char msb;
+    char KT2_H = 0xDF;
+    char KT2_L = 0xDE;
+	unsigned char lsb, msb;
 	int resolution;
 	int k_t1_scale = (int) (EEPROM[KT_SCALE] & 0xF0) >> 4;
 	int k_t2_scale = (int) (EEPROM[KT_SCALE] & 0x0F) + 10;
 	float v_th = (float) 256 * EEPROM[VTH_H] + EEPROM[VTH_L];
 	float k_t1 = (float) 256 * EEPROM[KT1_H] + EEPROM[KT1_L];
-        float k_t2 = (float) 256 * EEPROM[KT2_H] + EEPROM[KT2_L];
+    float k_t2 = (float) 256 * EEPROM[KT2_H] + EEPROM[KT2_L];
 	mlx90621_read_config(&lsb, &msb);
-        resolution = (((int) (msb << 8) | lsb) & 0x30) >> 4;
+    resolution = (((int) (msb << 8) | lsb) & 0x30) >> 4;
 
 	if (v_th >= 32768.0)
 		v_th -= 65536.0;
@@ -535,6 +528,78 @@ mlx90621_ta()
 			/ (2 * k_t2)) + 25.0;
 
 }
+
+void
+calc_to(float ta,  int vcp)
+{
+    char CAL_EMIS_H = 0xE5;
+    char CAL_EMIS_L = 0xE4;
+    char CAL_ACOMMON_H = 0xD1;
+    char CAL_ACOMMON_L = 0xD0;
+    char CAL_alphaCP_H = 0xD7;
+    char CAL_alphaCP_L = 0xD6;
+    char CAL_A0_SCALE = 0xE2;
+    char CAL_AI_SCALE = 0xD9;
+    char CAL_BI_SCALE = 0xD9;
+    char CAL_ACP_H = 0xD4;
+    char CAL_ACP_L = 0xD3;
+    char CAL_BCP = 0xD5;
+    char CAL_TGC = 0xD8;
+
+
+
+    float a_ij[64], b_ij[64], alpha_ij[64];
+    unsigned char lsb, msb;
+    int resolution;
+    mlx90621_read_config(&lsb, &msb);
+    resolution = (((int) (msb << 8) | lsb) & 0x30) >> 4;
+    //Calculate variables from EEPROM
+    float emissivity = (256 * EEPROM[CAL_EMIS_H] + EEPROM[CAL_EMIS_L])
+            / 32768.0;
+      
+    int a_common = 56 * EEPROM[CAL_ACOMMON_H]
+            + EEPROM[CAL_ACOMMON_L];
+    float alpha_cp = (256 * EEPROM[CAL_alphaCP_H] + EEPROM[CAL_alphaCP_L])
+            / (pow(2, CAL_A0_SCALE) * pow(2, (3 - resolution)));
+    int a_i_scale = (EEPROM[CAL_AI_SCALE] & 0xF0) >> 4;
+    int b_i_scale = EEPROM[CAL_BI_SCALE] & 0x0F;
+    float a_cp = (float) 256 * EEPROM[CAL_ACP_H] + EEPROM[CAL_ACP_L];
+    float b_cp = (float) EEPROM[CAL_BCP];
+    float tgc = (float) EEPROM[CAL_TGC];
+    float v_cp_off_comp = (float) vcp - (a_cp + b_cp * (Tambient - 25.0));
+    float v_ir_off_comp, v_ir_tgc_comp, v_ir_norm, v_ir_comp;
+    if (a_common >= 32768)
+        a_common -= 65536;
+    if (a_cp >= 32768.0)
+        a_cp -= 65536.0;
+    a_cp /= pow(2, (3 - resolution));
+    if (b_cp > 127.0)
+        b_cp -= 256.0;
+    b_cp /= (pow(2, b_i_scale) * pow(2, (3 - resolution)));
+    if (tgc > 127.0)
+        tgc -= 256.0;
+    tgc /= 32.0;
+    for (int i = 0; i < 64; i++) {
+        a_ij[i] = ((float) a_common + EEPROM[i] * pow(2, a_i_scale))
+                / pow(2, (3 - resolution));
+        b_ij[i] = EEPROM[0x40 + i];
+        if (b_ij[i] > 127)
+            b_ij[i] -= 256;
+        b_ij[i] = b_ij[i] / (pow(2, b_i_scale) * pow(2, (3 - resolution)));
+        v_ir_off_comp = irData[i] - (a_ij[i] + b_ij[i] * (Tambient - 25.0));
+        v_ir_tgc_comp = v_ir_off_comp - tgc * v_cp_off_comp;
+        alpha_ij[i] = ((256 * EEPROM[CAL_A0_H] + EEPROM[CAL_A0_L])     
+                / pow(2, EEPROM[CAL_A0_SCALE]));                              
+        alpha_ij[i] += (EEPROM[0x80 + i] / pow(2, EEPROM[CAL_DELTA_A_SCALE]));                          
+        alpha_ij[i] = alpha_ij[i] / pow(2, 3 - resolution);                                 
+        v_ir_norm = v_ir_tgc_comp / (alpha_ij[i] - tgc * alpha_cp);
+        v_ir_comp = v_ir_norm / emissivity;
+        temperatures[i] = exp((log(   (v_ir_comp + pow((Tambient + 273.15), 4))   )/4.0))  
+                - 273.15;
+        temperaturesInt[x] = (unsigned short)((temperatures[i] + 273.15) * 100.0) ;
+    }
+}
+
 
 /* IR data read */
 
