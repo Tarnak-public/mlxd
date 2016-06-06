@@ -607,14 +607,19 @@ mlx90621_ir_read()
         read_ir[1] = j;
         bcm2835_i2c_begin();
         bcm2835_i2c_setSlaveAddress(0x60);
+        printf("TE 01");
         if (
             bcm2835_i2c_write_read_rs((char *)&read_ir, 4, (char *)&ir_bytes, 32)
             == BCM2835_I2C_REASON_OK
             ) return 1;
+         printf("TE 02");
         for (i = 0; i < 32; i+=2) {
+            printf("TE 03");
             irData[j+i] = (int) (ir_bytes[i+1] << 8) | ir_bytes[i];
             printf("irdata index: %d  value: %d \n", j+i, irData[j+i]);
+            printf("TE 04");
         }
+        printf("TE 05");
     }
     return 0;
 }
