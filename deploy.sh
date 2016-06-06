@@ -19,9 +19,9 @@ for i in ${hosts[@]}; do
     ssh ${user}@${i} "cd /var/services/mlxd; git pull";
     ssh ${user}@${i} "cd /var/services/mlxd; make"
     ssh ${user}@${i} "${sudoCmd}cp -f /var/services/mlxd/init.d/mlxd /etc/init.d/"
-    ssh ${user}@${i} ${serviceSetupCommand}
-    ssh ${user}@${i} "${sudoCmd}/etc/init.d/mlxd stop"
+    #ssh ${user}@${i} ${serviceSetupCommand}
+    #ssh ${user}@${i} "${sudoCmd}/etc/init.d/mlxd stop"
     ssh ${user}@${i} "${sudoCmd}rm -f /var/services/mlxd/app.pid"
     ssh ${user}@${i} "${sudoCmd}cp -f /var/services/mlxd/monit.d/mlxd ${monitDir}"
-    ssh ${user}@${i} "${sudoCmd}service monit reload"
+    #ssh ${user}@${i} "${sudoCmd}service monit reload"
 done

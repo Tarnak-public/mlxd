@@ -604,7 +604,7 @@ mlx90621_ir_read()
     unsigned char ir_bytes[32];
     
     for(j=0;j<64;j+=16) {
-        read_ir[1] = j;
+        //read_ir[1] = j;
         bcm2835_i2c_begin();
         bcm2835_i2c_setSlaveAddress(0x60);
         printf("TE 01");
