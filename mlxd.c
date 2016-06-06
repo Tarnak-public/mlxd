@@ -593,6 +593,8 @@ calc_to(float ta,  int vcp)
         temperatures[i] = exp((log(   (v_ir_comp + pow((ta + 273.15), 4))   )/4.0))  
                 - 273.15;
         temperaturesInt[i] = (unsigned short)((temperatures[i] + 273.15) * 100.0) ;
+        printf("TE Test Temperatures index: %d value: %d \n", i, temperatures[i]);
+        printf("TE Test TemperaturesInt index: %d value: %d \n", i, temperaturesInt[i]);
     }
 }
 
@@ -616,7 +618,7 @@ mlx90621_ir_read()
     for (i = 0; i < 128; i += 2) {
             j = i/2;
             irData[j] = (int) (ir_pixels[i+1] << 8) | ir_pixels[i];
-            printf("TE Test index: %d value: %d \n", j, irData[j]);
+            //printf("TE Test index: %d value: %d \n", j, irData[j]);
     }
     return 1;
 }
