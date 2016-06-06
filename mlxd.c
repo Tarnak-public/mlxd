@@ -613,16 +613,20 @@ mlx90621_ir_read()
     for(j=0;j<64;j+=16) {
         sprintf(hexStr, "%x", j);
         sscanf(hexStr, "%c", &hex);
+        printf("test1");
         read_ir[1] = hex;
         bcm2835_i2c_begin();
         bcm2835_i2c_setSlaveAddress(0x60);
+        printf("test2");
         if (
             bcm2835_i2c_write_read_rs((char *)&read_ir, 4, (char *)&ir_bytes, 32)
             == BCM2835_I2C_REASON_OK
             ) return 1;
+        printf("test3");
         for (i = 0; i < 16; i++) {
             irData[j+i] = (int) (ir_bytes[1] << 8) | ir_bytes[0];
         }
+        printf("test4");
     }
     return 0;
 }
