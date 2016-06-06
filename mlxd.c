@@ -606,7 +606,7 @@ mlx90621_ir_read()
         0x20  // number of reads
     };
     int j, i;
-    char hex[10];
+    unsigned char hex[10];
     unsigned char ir_bytes[2];
 
     for(j=0;j<64;j+=16) {
