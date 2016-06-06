@@ -606,7 +606,7 @@ mlx90621_ir_read()
     bcm2835_i2c_setSlaveAddress(0x60);
 
     for(j=0;j<64;j+=16) {
-        read_ir[1] = j;
+        //read_ir[1] = j;
         if (
             bcm2835_i2c_write_read_rs((char *)&read_ir, 4, (char *)&ir_bytes, 32)
             == BCM2835_I2C_REASON_OK
