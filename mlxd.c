@@ -613,7 +613,7 @@ mlx90621_ir_read()
             ) return 1;
         for (i = 0; i < 32; i+=2) {
             irData[j+i] = (int) (ir_bytes[i+1] << 8) | ir_bytes[i];
-            printf("irdata index: %d  value: %d", j+i, irData[j+i]);
+            printf("irdata index: %d  value: %d \n", j+i, irData[j+i]);
         }
     }
     return 0;
