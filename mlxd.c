@@ -192,10 +192,13 @@ main (int argc, char **argv)
             sleep(1);
             mlx90621_init();
         }
+        printf("TE Test 00 \n");
         if ( !mlx90621_ir_read() ) exit(0);
+        printf("TE Test 10 \n");
 
         /* Calculate To */
         calc_to(ta, vcp);
+        printf("TE Test 20 \n");
 
         fd = open(mlxFifo, O_WRONLY);
         write(fd, temperaturesInt, sizeof(temperaturesInt));
@@ -607,7 +610,8 @@ mlx90621_ir_read()
     if (bcm2835_i2c_write_read_rs((char *)&ir_whole_frame_read, 4, ir_pixels, 128)
         == BCM2835_I2C_REASON_OK) return 1;
 
-    for (i = 0; i < 128; i+=2) {
+    for (i = 0; i < 128; i += 2) {
+            printf("TE Test 01 %d \n", i);
             irData[i] = (int) (ir_pixels[i+1] << 8) | ir_pixels[i];
     }
     return 0;
