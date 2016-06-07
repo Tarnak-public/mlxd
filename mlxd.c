@@ -554,7 +554,7 @@ calc_to(float ta,  int vcp)
     int cal_a0_l_val = EEPROM[CAL_A0_L];
     int cal_a0_scale_val = EEPROM[CAL_A0_SCALE];
     int cal_delta_a_scale_val = EEPROM[CAL_DELTA_A_SCALE];
-
+/*
     printf("CAL_EMIS_H: %d \n", EEPROM[CAL_EMIS_H]);
     printf("CAL_EMIS_L: %d \n", EEPROM[CAL_EMIS_L]);
     printf("CAL_ACOMMON_H: %d \n", EEPROM[CAL_ACOMMON_H]);
@@ -567,7 +567,7 @@ calc_to(float ta,  int vcp)
     printf("CAL_ACP_L: %d \n", EEPROM[CAL_ACP_L]);
     printf("CAL_BCP: %d \n", EEPROM[CAL_BCP]);
     printf("CAL_TGC: %d \n", EEPROM[CAL_TGC]);
-
+*/
     //Calculate variables from EEPROM
     float emissivity = (256 * EEPROM[CAL_EMIS_H] + EEPROM[CAL_EMIS_L])
             / 32768.0;
@@ -595,7 +595,7 @@ calc_to(float ta,  int vcp)
         tgc -= 256.0;
     tgc /= 32.0;
 
-
+/*
     printf("CAL_A0_H: %d \n", cal_a0_h_val);
     printf("CAL_A0_L: %d \n", cal_a0_l_val);
     printf("CAL_A0_SCALE: %d \n", cal_a0_scale_val);
@@ -610,40 +610,40 @@ calc_to(float ta,  int vcp)
     printf("b_cp: %f \n", b_cp);
     printf("tgc: %f \n", tgc);
     printf("v_cp_off_comp: %f \n", v_cp_off_comp);
-
+*/
     for (i = 0; i < 64; i++) {
         a_ij[i] = ((float) a_common + EEPROM[i] * pow(a_i_scale, 2))
                 / pow((3 - resolution), 2);
-        printf("a_ij %d: %f \n", i, a_ij[i]);
+        //printf("a_ij %d: %f \n", i, a_ij[i]);
         b_ij[i] = EEPROM[0x40 + i];
         if (b_ij[i] > 127)
             b_ij[i] -= 256;
         b_ij[i] = b_ij[i] / (pow(b_i_scale, 2) * pow((3 - resolution), 2));
-        printf("b_ij %d: %f \n", i, b_ij[i]);
+        //printf("b_ij %d: %f \n", i, b_ij[i]);
         v_ir_off_comp = irData[i] - (a_ij[i] + b_ij[i] * (ta - 25.0));
-        printf("v_ir_off_comp %d: %f \n", i, v_ir_off_comp);
+        //printf("v_ir_off_comp %d: %f \n", i, v_ir_off_comp);
         v_ir_tgc_comp = v_ir_off_comp - tgc * v_cp_off_comp;
-        printf("v_ir_tgc_comp %d: %f \n", i, v_ir_tgc_comp);
+        //printf("v_ir_tgc_comp %d: %f \n", i, v_ir_tgc_comp);
 
 
-        printf("test1 %d: %9.6f \n", i, (256.0 * cal_a0_h_val + cal_a0_l_val));
-        printf("test2 %d: %9.6f \n", i, pow(cal_a0_scale_val, 2));
+        //printf("test1 %d: %9.6f \n", i, (256.0 * cal_a0_h_val + cal_a0_l_val));
+        //printf("test2 %d: %9.6f \n", i, pow(cal_a0_scale_val, 2));
         alpha_ij[i] = (float) ((256.0 * cal_a0_h_val + cal_a0_l_val)
                 / pow(cal_a0_scale_val, 2));
-        printf("alpha_ij %d: %9.6f \n", i, alpha_ij[i]);
+        //printf("alpha_ij %d: %9.6f \n", i, alpha_ij[i]);
         alpha_ij[i] += (float) (EEPROM[0x80 + i] / pow(cal_delta_a_scale_val, 2));
-        printf("alpha_ij %d: %9.6f \n", i, alpha_ij[i]);
+        //printf("alpha_ij %d: %9.6f \n", i, alpha_ij[i]);
         alpha_ij[i] = (float) alpha_ij[i] / pow(3 - resolution, 2);
-        printf("alpha_ij %d: %9.6f \n", i, alpha_ij[i]);
+        //printf("alpha_ij %d: %9.6f \n", i, alpha_ij[i]);
         v_ir_norm = v_ir_tgc_comp / (alpha_ij[i] - tgc * alpha_cp);
-        printf("v_ir_norm %d: %f \n", i, v_ir_norm);
+        //printf("v_ir_norm %d: %f \n", i, v_ir_norm);
         v_ir_comp = v_ir_norm / emissivity;
-        printf("v_ir_comp %d: %f \n", i, v_ir_comp);
+        //printf("v_ir_comp %d: %f \n", i, v_ir_comp);
         temperatures[i] = exp((log(   (v_ir_comp + pow((ta + 273.15), 4))   )/4.0))
                 - 273.15;
         temperaturesInt[i] = (unsigned short)((temperatures[i] + 273.15) * 100.0) ;
-        //printf("TE Test Temperatures index: %d value: %d \n", i, temperatures[i]);
-        //printf("TE Test TemperaturesInt index: %d value: %d \n", i, temperaturesInt[i]);
+        printf("TE Test Temperatures index: %d value: %d \n", i, temperatures[i]);
+        printf("TE Test TemperaturesInt index: %d value: %d \n", i, temperaturesInt[i]);
     }
 }
 
