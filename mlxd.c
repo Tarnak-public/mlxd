@@ -626,7 +626,8 @@ calc_to(float ta,  int vcp)
         printf("v_ir_tgc_comp %d: %f \n", i, v_ir_tgc_comp);
 
 
-
+        printf("test1 %d: %9.6f \n", i, (256.0 * cal_a0_h_val + cal_a0_l_val));
+        printf("test2 %d: %9.6f \n", i, pow(2.0, cal_a0_scale_val));
         alpha_ij[i] = (float) ((256.0 * cal_a0_h_val + cal_a0_l_val)
                 / pow(2.0, cal_a0_scale_val));
         printf("alpha_ij %d: %9.6f \n", i, alpha_ij[i]);
