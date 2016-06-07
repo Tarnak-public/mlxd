@@ -551,7 +551,7 @@ calc_to(float ta,  int vcp)
     resolution = (((int) (msb << 8) | lsb) & 0x30) >> 4;
 
     int cal_a0_h_val = EEPROM[CAL_A0_H];
-    int cal_a0_l_val = [CAL_A0_L];
+    int cal_a0_l_val = EEPROM[CAL_A0_L];
     int cal_a0_scale_val = EEPROM[CAL_A0_SCALE];
     int cal_delta_a_scale_val = EEPROM[CAL_DELTA_A_SCALE];
 
