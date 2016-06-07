@@ -601,7 +601,9 @@ calc_to(float ta,  int vcp)
         printf("v_ir_tgc_comp %d: %f \n", i, v_ir_tgc_comp);
         alpha_ij[i] = ((256 * EEPROM[CAL_A0_H] + EEPROM[CAL_A0_L])
                 / pow(2, EEPROM[CAL_A0_SCALE]));
+        printf("alpha_ij %d: %f \n", i, alpha_ij[i]);
         alpha_ij[i] += (EEPROM[0x80 + i] / pow(2, EEPROM[CAL_DELTA_A_SCALE]));
+        printf("alpha_ij %d: %f \n", i, alpha_ij[i]);
         alpha_ij[i] = alpha_ij[i] / pow(2, 3 - resolution);
         printf("alpha_ij %d: %f \n", i, alpha_ij[i]);
         v_ir_norm = v_ir_tgc_comp / (alpha_ij[i] - tgc * alpha_cp);
