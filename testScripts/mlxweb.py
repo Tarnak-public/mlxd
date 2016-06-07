@@ -65,6 +65,8 @@ def get_overlay(fifo):
     print('test4')
     p2, p98 = np.percentile(ir, (2, 98))
     print('test5')
+    pprint(p2)
+    pprint(p98)
     ir = exposure.rescale_intensity(ir, in_range=(p2, p98))
     print('test6')
     # increase even further? (optional)
