@@ -609,9 +609,11 @@ calc_to(float ta,  int vcp)
     printf("v_cp_off_comp: %f \n", v_cp_off_comp);
 */
     for (i = 0; i < 64; i++) {
+        printf("EEPROM[i] %d: %d \n", i, EEPROM[i]);
         a_ij[i] = ((float) a_common + EEPROM[i] * pow(a_i_scale, 2))
                 / pow((3 - resolution), 2);
         printf("a_ij %d: %f \n", i, a_ij[i]);
+        printf("EEPROM[0x40 + i] %d: %d \n", i, EEPROM[0x40 + i]);
         b_ij[i] = EEPROM[0x40 + i];
         if (b_ij[i] > 127)
             b_ij[i] -= 256;
@@ -628,6 +630,7 @@ calc_to(float ta,  int vcp)
         alpha_ij[i] = (float) ((256.0 * cal_a0_h_val + cal_a0_l_val)
                 / pow(cal_a0_scale_val, 2));
         printf("alpha_ij %d: %9.6f \n", i, alpha_ij[i]);
+        printf("EEPROM[0x80 + i] %d: %d \n", i, EEPROM[0x80 + i]);
         alpha_ij[i] += (float) (EEPROM[0x80 + i] / pow(cal_delta_a_scale_val, 2));
         printf("alpha_ij %d: %9.6f \n", i, alpha_ij[i]);
         alpha_ij[i] = (float) alpha_ij[i] / pow(3 - resolution, 2);
