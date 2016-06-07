@@ -600,10 +600,10 @@ calc_to(float ta,  int vcp)
         v_ir_tgc_comp = v_ir_off_comp - tgc * v_cp_off_comp;
         printf("v_ir_tgc_comp %d: %f \n", i, v_ir_tgc_comp);
 
-        printf("CAL_A0_H %d: %f \n", i, EEPROM[CAL_A0_H] << 8 );
-        printf("CAL_A0_L %d: %f \n", i, EEPROM[CAL_A0_L] << 8 );
-        printf("CAL_A0_SCALE %d: %f \n", i, EEPROM[CAL_A0_SCALE] << 8 );
-        printf("CAL_DELTA_A_SCALE %d: %f \n", i, EEPROM[CAL_DELTA_A_SCALE] << 8 );
+        printf("CAL_A0_H %d: %d \n", i, EEPROM[CAL_A0_H] << 8 );
+        printf("CAL_A0_L %d: %d \n", i, EEPROM[CAL_A0_L] << 8 );
+        printf("CAL_A0_SCALE %d: %d \n", i, EEPROM[CAL_A0_SCALE] << 8 );
+        printf("CAL_DELTA_A_SCALE %d: %d \n", i, EEPROM[CAL_DELTA_A_SCALE] << 8 );
 
         alpha_ij[i] = ((256 * EEPROM[CAL_A0_H] + EEPROM[CAL_A0_L])
                 / pow(2, EEPROM[CAL_A0_SCALE]));
