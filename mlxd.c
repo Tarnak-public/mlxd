@@ -208,7 +208,6 @@ main (int argc, char **argv)
         fd = open(mlxFifo, O_WRONLY);
         write(fd, temperaturesInt, sizeof(temperaturesInt));
         close(fd);
-        //printf("Updated Temperatures!\n");
         usleep(100000);
     } while (1);
 
@@ -642,8 +641,8 @@ calc_to(float ta,  int vcp)
         temperatures[i] = exp((log(   (v_ir_comp + pow((ta + 273.15), 4))   )/4.0))
                 - 273.15;
         temperaturesInt[i] = (unsigned short)((temperatures[i] + 273.15) * 100.0) ;
-        printf("TE Test Temperatures index: %d value: %f \n", i, temperatures[i]);
-        printf("TE Test TemperaturesInt index: %d value: %d \n", i, temperaturesInt[i]);
+        //printf("TE Test Temperatures index: %d value: %f \n", i, temperatures[i]);
+        //printf("TE Test TemperaturesInt index: %d value: %d \n", i, temperaturesInt[i]);
     }
 }
 
