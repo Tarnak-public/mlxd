@@ -56,26 +56,41 @@ def get_overlay(fifo):
     ir = np.frombuffer(ir_trimmed, np.uint16)
     pprint(ir)
     # set the array shape to the sensor shape (16x4)
+    print('test1')
     ir = ir.reshape((16, 4))[::-1, ::-1]
+    print('test2')
     ir = img_as_float(ir)
+    print('test3')
     # stretch contrast on our heat map
+    print('test4')
     p2, p98 = np.percentile(ir, (2, 98))
+    print('test5')
     ir = exposure.rescale_intensity(ir, in_range=(p2, p98))
+    print('test6')
     # increase even further? (optional)
     # ir = exposure.equalize_hist(ir)
 
     # turn our array into pretty colors
+    print('test7')
     cmap = plt.get_cmap('spectral')
+    print('test8')
     rgba_img = cmap(ir)
+    print('test9')
     rgb_img = np.delete(rgba_img, 3, 2)
+    print('test10')
 
     # align the IR array with the camera
+    print('test11')
     tform = transform.AffineTransform(
         scale=SCALE, rotation=ROT, translation=OFFSET)
+    print('test12')
     ir_aligned = transform.warp(
         rgb_img, tform.inverse, mode='constant', output_shape=im.shape)
+    print('test13')
     # turn it back into a ubyte so it'll display on the preview overlay
+    print('test14')
     ir_byte = img_as_ubyte(ir_aligned)
+    print('test15')
     # return buffer
     return np.getbuffer(ir_byte)
 
