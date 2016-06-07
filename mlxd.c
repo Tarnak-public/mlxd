@@ -639,11 +639,11 @@ calc_to(float ta,  int vcp)
         //printf("v_ir_norm %d: %f \n", i, v_ir_norm);
         v_ir_comp = v_ir_norm / emissivity;
         //printf("v_ir_comp %d: %f \n", i, v_ir_comp);
-        temperatures[i] = exp((log(   (v_ir_comp + pow((ta + 273.15), 4))   )/4.0))
+        temperatures[i] = pow((v_ir_comp + pow((ta + 273.15), 4)), 1/4.0)
                 - 273.15;
         temperaturesInt[i] = (unsigned short)((temperatures[i] + 273.15) * 100.0) ;
-        //printf("TE Test Temperatures index: %d value: %f \n", i, temperatures[i]);
-        //printf("TE Test TemperaturesInt index: %d value: %d \n", i, temperaturesInt[i]);
+        printf("TE Test Temperatures index: %d value: %f \n", i, temperatures[i]);
+        printf("TE Test TemperaturesInt index: %d value: %d \n", i, temperaturesInt[i]);
     }
 }
 
