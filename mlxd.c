@@ -627,8 +627,8 @@ calc_to(float ta,  int vcp)
 
 
 
-        alpha_ij[i] = (float) ((256 * cal_a0_h_val + cal_a0_l_val)
-                / pow(2, cal_a0_scale_val));
+        alpha_ij[i] = (float) ((256.0 * cal_a0_h_val + cal_a0_l_val)
+                / pow(2.0, cal_a0_scale_val));
         printf("alpha_ij %d: %f \n", i, alpha_ij[i]);
         alpha_ij[i] += (float) (EEPROM[0x80 + i] / pow(2, cal_delta_a_scale_val));
         printf("alpha_ij %d: %f \n", i, alpha_ij[i]);
