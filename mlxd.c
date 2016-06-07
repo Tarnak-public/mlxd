@@ -594,7 +594,7 @@ calc_to(float ta,  int vcp)
         if (b_ij[i] > 127)
             b_ij[i] -= 256;
         b_ij[i] = b_ij[i] / (pow(2, b_i_scale) * pow(2, (3 - resolution)));
-        printf("b_ij %d: %f \n", i, b_ij[i])
+        printf("b_ij %d: %f \n", i, b_ij[i]);
         v_ir_off_comp = irData[i] - (a_ij[i] + b_ij[i] * (ta - 25.0));
         printf("v_ir_off_comp %d: %f \n", i, v_ir_off_comp);
         v_ir_tgc_comp = v_ir_off_comp - tgc * v_cp_off_comp;
@@ -605,7 +605,7 @@ calc_to(float ta,  int vcp)
         alpha_ij[i] = alpha_ij[i] / pow(2, 3 - resolution);
         printf("alpha_ij %d: %f \n", i, alpha_ij[i]);
         v_ir_norm = v_ir_tgc_comp / (alpha_ij[i] - tgc * alpha_cp);
-        printf("v_ir_norm %d: %f \n", i, av_ir_norm);
+        printf("v_ir_norm %d: %f \n", i, v_ir_norm);
         v_ir_comp = v_ir_norm / emissivity;
         printf("v_ir_comp %d: %f \n", i, v_ir_comp);
         temperatures[i] = exp((log(   (v_ir_comp + pow((ta + 273.15), 4))   )/4.0))
