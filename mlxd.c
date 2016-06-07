@@ -589,30 +589,30 @@ calc_to(float ta,  int vcp)
     for (i = 0; i < 64; i++) {
         a_ij[i] = ((float) a_common + EEPROM[i] * pow(2, a_i_scale))
                 / pow(2, (3 - resolution));
-        //printf("a_ij %d: %f \n", i, a_ij[i]);
+        printf("a_ij %d: %f \n", i, a_ij[i]);
         b_ij[i] = EEPROM[0x40 + i];
         if (b_ij[i] > 127)
             b_ij[i] -= 256;
         b_ij[i] = b_ij[i] / (pow(2, b_i_scale) * pow(2, (3 - resolution)));
-        //printf("b_ij %d: %f \n", i, b_ij[i])
+        printf("b_ij %d: %f \n", i, b_ij[i])
         v_ir_off_comp = irData[i] - (a_ij[i] + b_ij[i] * (ta - 25.0));
-        //printf("v_ir_off_comp %d: %f \n", i, v_ir_off_comp)
+        printf("v_ir_off_comp %d: %f \n", i, v_ir_off_comp)
         v_ir_tgc_comp = v_ir_off_comp - tgc * v_cp_off_comp;
-        //printf("v_ir_tgc_comp %d: %f \n", i, v_ir_tgc_comp)
+        printf("v_ir_tgc_comp %d: %f \n", i, v_ir_tgc_comp)
         alpha_ij[i] = ((256 * EEPROM[CAL_A0_H] + EEPROM[CAL_A0_L])
                 / pow(2, EEPROM[CAL_A0_SCALE]));
         alpha_ij[i] += (EEPROM[0x80 + i] / pow(2, EEPROM[CAL_DELTA_A_SCALE]));
         alpha_ij[i] = alpha_ij[i] / pow(2, 3 - resolution);
-        //printf("alpha_ij %d: %f \n", i, alpha_ij[i])
+        printf("alpha_ij %d: %f \n", i, alpha_ij[i])
         v_ir_norm = v_ir_tgc_comp / (alpha_ij[i] - tgc * alpha_cp);
-        //printf("v_ir_norm %d: %f \n", i, av_ir_norm)
+        printf("v_ir_norm %d: %f \n", i, av_ir_norm)
         v_ir_comp = v_ir_norm / emissivity;
-        //printf("v_ir_comp %d: %f \n", i, v_ir_comp)
+        printf("v_ir_comp %d: %f \n", i, v_ir_comp)
         temperatures[i] = exp((log(   (v_ir_comp + pow((ta + 273.15), 4))   )/4.0))
                 - 273.15;
         temperaturesInt[i] = (unsigned short)((temperatures[i] + 273.15) * 100.0) ;
-        printf("TE Test Temperatures index: %d value: %d \n", i, temperatures[i]);
-        printf("TE Test TemperaturesInt index: %d value: %d \n", i, temperaturesInt[i]);
+        //printf("TE Test Temperatures index: %d value: %d \n", i, temperatures[i]);
+        //printf("TE Test TemperaturesInt index: %d value: %d \n", i, temperaturesInt[i]);
     }
 }
 
