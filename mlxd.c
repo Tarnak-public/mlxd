@@ -565,7 +565,7 @@ calc_to(float ta,  int vcp)
     printf("CAL_ACP_H: %d \n", EEPROM[CAL_ACP_H]);
     printf("CAL_ACP_L: %d \n", EEPROM[CAL_ACP_L]);
     printf("CAL_BCP: %d \n", EEPROM[CAL_BCP]);
-    printf("CAL_TGC: %d \n", EEPROM[CAL_TGC]);
+    printf("CAL_TGC: %d \n", (signed char) EEPROM[CAL_TGC]);
 
     //Calculate variables from EEPROM
     float emissivity = (256 * EEPROM[CAL_EMIS_H] + EEPROM[CAL_EMIS_L])
