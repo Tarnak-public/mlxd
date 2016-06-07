@@ -52,7 +52,6 @@ def get_overlay(fifo):
     ir_raw = fifo.read()
     # trim to 128 bytes
     ir_trimmed = ir_raw[0:128]
-    pprint(ir_trimmed)
     # go all numpy on it
     ir = np.frombuffer(ir_trimmed, np.uint16)
     pprint(ir)
