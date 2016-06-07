@@ -1,13 +1,13 @@
 /*
    simple demonstration daemon for the MLX90621 16x4 thermopile array
-   
+
    Modified by Todd Erickson for the MLX90621
-   
+
    Forked from https://github.com/alphacharlie/mlxd written by Chuck Werbick
 
    Copyright (C) 2015 Chuck Werbick
 
-   Based upon the program 'piir' by Mike Strean 
+   Based upon the program 'piir' by Mike Strean
 
    Copyright (C) 2013 Mike Strean
 
@@ -23,7 +23,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
+   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 */
 #include <fcntl.h>
@@ -89,10 +89,10 @@ char mlxFifo[] = "/var/run/mlx90621.sock";
 
 
 void got_sigint(int sig) {
-    unlink(mlxFifo); 
+    unlink(mlxFifo);
     bcm2835_i2c_end();
     exit(0);
-   
+
 }
 
 
@@ -157,7 +157,7 @@ main (int argc, char **argv)
     ta = mlx90621_ta();
     printf("Ta reading: %4.8f C\n", ta);
     // If calibration fails then TA will be WAY too high. check and reinitialize if that happens
-    while ((ta > 350 || ta != ta) && retryCount < 2) 
+    while ((ta > 350 || ta != ta) && retryCount < 2)
     {
     	printf("Ta out of bounds! Max is 350, reading: %4.8f C\n", ta);
     	//out of bounds, reset and check again
@@ -226,13 +226,13 @@ mlx90621_init()
     if (!bcm2835_init()) return 0;
     bcm2835_i2c_begin();
     bcm2835_i2c_set_baudrate(25000);
-    
+
     //sleep 5ms per datasheet
     usleep(5000);
     if ( !mlx90621_read_eeprom() ) return 0;
     if ( !mlx90621_write_trim( EEPROM[0xF7] ) ) return 0;
     if ( !mlx90621_write_config( &EEPROM[0xF5], &EEPROM[0xF6] ) ) return 0;
-    
+
     mlx90621_set_refresh_hz( 4 );
 
     unsigned char lsb, msb;
@@ -323,7 +323,7 @@ mlx90621_write_trim(char t)
     };
     unsigned char trim_check_lsb = trim[1] - 0xAA;
     unsigned char trim_check_msb = trim[0] - 0xAA;
-    
+
     unsigned char write_trim[] = {
         0x04, // command
         trim_check_lsb,
@@ -331,14 +331,14 @@ mlx90621_write_trim(char t)
         trim_check_msb,
         trim[0]
     };
-    
+
     bcm2835_i2c_begin();
     bcm2835_i2c_setSlaveAddress(0x60);
     if (
         bcm2835_i2c_write((char *)&write_trim, 5)
         == BCM2835_I2C_REASON_OK
         ) return 1;
-    
+
     return 0;
 }
 
@@ -355,14 +355,14 @@ mlx90621_read_trim()
         0x00, // address step
         0x01  // number of reads
     };
-    
+
     bcm2835_i2c_begin();
     bcm2835_i2c_setSlaveAddress(0x60);
     if (
         bcm2835_i2c_write_read_rs((char *)&read_trim, 4, trim_bytes, 2)
         == BCM2835_I2C_REASON_OK
         ) return 1;
-    
+
     return trim_bytes[0];
 }
 
@@ -383,7 +383,7 @@ int
 mlx90621_set_refresh_hz(int hz)
 {
     char rate_bits;
-    
+
     switch (hz) {
         case 512:
             rate_bits = 0b0000;
@@ -510,15 +510,15 @@ mlx90621_ta()
 	if (v_th >= 32768.0)
 		v_th -= 65536.0;
 	v_th = v_th / pow(2, (3 - resolution));
-	
+
 	if (k_t1 >= 32768.0)
 		k_t1 -= 65536.0;
 	k_t1 /= (pow(2, k_t1_scale) * pow(2, (3 - resolution)));
-	
+
 	if (k_t2 >= 32768.0)
 		k_t2 -= 65536.0;
 	k_t2 /= (pow(2, k_t2_scale) * pow(2, (3 - resolution)));
-	
+
 	return ((-k_t1 + sqrt(pow(k_t1, 2) - (4 * k_t2 * (v_th - (float) ptat))))
 			/ (2 * k_t2)) + 25.0;
 
@@ -533,7 +533,7 @@ calc_to(float ta,  int vcp)
     char CAL_ACOMMON_L = 0xD0;
     char CAL_alphaCP_H = 0xD7;
     char CAL_alphaCP_L = 0xD6;
-    char CAL_A0_SCALE = 0xE2;
+    int CAL_A0_SCALE = 226;
     char CAL_AI_SCALE = 0xD9;
     char CAL_BI_SCALE = 0xD9;
     char CAL_ACP_H = 0xD4;
@@ -552,7 +552,7 @@ calc_to(float ta,  int vcp)
     //Calculate variables from EEPROM
     float emissivity = (256 * EEPROM[CAL_EMIS_H] + EEPROM[CAL_EMIS_L])
             / 32768.0;
-      
+
     int a_common = 56 * EEPROM[CAL_ACOMMON_H]
             + EEPROM[CAL_ACOMMON_L];
     float alpha_cp = (256 * EEPROM[CAL_alphaCP_H] + EEPROM[CAL_alphaCP_L])
@@ -561,7 +561,7 @@ calc_to(float ta,  int vcp)
     int b_i_scale = EEPROM[CAL_BI_SCALE] & 0x0F;
     float a_cp = (float) 256 * EEPROM[CAL_ACP_H] + EEPROM[CAL_ACP_L];
     float b_cp = (float) EEPROM[CAL_BCP];
-    float tgc = (float) EEPROM[CAL_TGC];
+    float tgc = (signed char) EEPROM[CAL_TGC];
     float v_cp_off_comp = (float) vcp - (a_cp + b_cp * (ta - 25.0));
     float v_ir_off_comp, v_ir_tgc_comp, v_ir_norm, v_ir_comp;
     if (a_common >= 32768)
@@ -599,16 +599,16 @@ calc_to(float ta,  int vcp)
         //printf("v_ir_off_comp %d: %f \n", i, v_ir_off_comp)
         v_ir_tgc_comp = v_ir_off_comp - tgc * v_cp_off_comp;
         //printf("v_ir_tgc_comp %d: %f \n", i, v_ir_tgc_comp)
-        alpha_ij[i] = ((256 * EEPROM[CAL_A0_H] + EEPROM[CAL_A0_L])     
-                / pow(2, EEPROM[CAL_A0_SCALE]));                              
-        alpha_ij[i] += (EEPROM[0x80 + i] / pow(2, EEPROM[CAL_DELTA_A_SCALE]));                          
+        alpha_ij[i] = ((256 * EEPROM[CAL_A0_H] + EEPROM[CAL_A0_L])
+                / pow(2, EEPROM[CAL_A0_SCALE]));
+        alpha_ij[i] += (EEPROM[0x80 + i] / pow(2, EEPROM[CAL_DELTA_A_SCALE]));
         alpha_ij[i] = alpha_ij[i] / pow(2, 3 - resolution);
-        //printf("alpha_ij %d: %f \n", i, alpha_ij[i])                                 
+        //printf("alpha_ij %d: %f \n", i, alpha_ij[i])
         v_ir_norm = v_ir_tgc_comp / (alpha_ij[i] - tgc * alpha_cp);
-        //printf("v_ir_norm %d: %f \n", i, av_ir_norm)  
+        //printf("v_ir_norm %d: %f \n", i, av_ir_norm)
         v_ir_comp = v_ir_norm / emissivity;
         //printf("v_ir_comp %d: %f \n", i, v_ir_comp)
-        temperatures[i] = exp((log(   (v_ir_comp + pow((ta + 273.15), 4))   )/4.0))  
+        temperatures[i] = exp((log(   (v_ir_comp + pow((ta + 273.15), 4))   )/4.0))
                 - 273.15;
         temperaturesInt[i] = (unsigned short)((temperatures[i] + 273.15) * 100.0) ;
         printf("TE Test Temperatures index: %d value: %d \n", i, temperatures[i]);
@@ -651,7 +651,7 @@ decode_switches (int argc, char **argv)
   int c;
 
 
-  while ((c = getopt_long (argc, argv, 
+  while ((c = getopt_long (argc, argv,
 			   "h"	/* help */
 			   "V",	/* version */
 			   long_options, (int *) 0)) != EOF)
