@@ -554,18 +554,18 @@ calc_to(float ta,  int vcp)
     int cal_a0_l_val = EEPROM[CAL_A0_L];
     int cal_a0_scale_val = EEPROM[CAL_A0_SCALE];
     int cal_delta_a_scale_val = EEPROM[CAL_DELTA_A_SCALE];
-    printf("CAL_EMIS_H: %f \n", EEPROM[CAL_EMIS_H]);
-    printf("CAL_EMIS_L: %f \n", EEPROM[CAL_EMIS_L]);
-    printf("CAL_ACOMMON_H: %f \n", EEPROM[CAL_ACOMMON_H]);
-    printf("CAL_ACOMMON_L: %f \n", EEPROM[CAL_ACOMMON_L]);
-    printf("CAL_alphaCP_H: %f \n", EEPROM[CAL_alphaCP_H]);
-    printf("CAL_alphaCP_L: %f \n", EEPROM[CAL_alphaCP_L]);
-    printf("CAL_AI_SCALE: %f \n", EEPROM[CAL_AI_SCALE]);
-    printf("CAL_BI_SCALE: %f \n", EEPROM[CAL_BI_SCALE]);
-    printf("CAL_ACP_H: %f \n", EEPROM[CAL_ACP_H]);
-    printf("CAL_ACP_L: %f \n", EEPROM[CAL_ACP_L]);
-    printf("CAL_BCP: %f \n", EEPROM[CAL_BCP]);
-    printf("CAL_TGC: %f \n", EEPROM[CAL_TGC]);
+    printf("CAL_EMIS_H: %d \n", EEPROM[CAL_EMIS_H]);
+    printf("CAL_EMIS_L: %d \n", EEPROM[CAL_EMIS_L]);
+    printf("CAL_ACOMMON_H: %d \n", EEPROM[CAL_ACOMMON_H]);
+    printf("CAL_ACOMMON_L: %d \n", EEPROM[CAL_ACOMMON_L]);
+    printf("CAL_alphaCP_H: %d \n", EEPROM[CAL_alphaCP_H]);
+    printf("CAL_alphaCP_L: %d \n", EEPROM[CAL_alphaCP_L]);
+    printf("CAL_AI_SCALE: %d \n", EEPROM[CAL_AI_SCALE]);
+    printf("CAL_BI_SCALE: %d \n", EEPROM[CAL_BI_SCALE]);
+    printf("CAL_ACP_H: %d \n", EEPROM[CAL_ACP_H]);
+    printf("CAL_ACP_L: %d \n", EEPROM[CAL_ACP_L]);
+    printf("CAL_BCP: %d \n", EEPROM[CAL_BCP]);
+    printf("CAL_TGC: %d \n", EEPROM[CAL_TGC]);
 
     //Calculate variables from EEPROM
     float emissivity = (256 * EEPROM[CAL_EMIS_H] + EEPROM[CAL_EMIS_L])
