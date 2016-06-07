@@ -192,18 +192,16 @@ main (int argc, char **argv)
             sleep(1);
             mlx90621_init();
         }
-        printf("TE Test 00 \n");
+
         mlxReadVal = mlx90621_ir_read();
-        printf("TE Test 07 %d \n", mlxReadVal);
+
         if ( !mlxReadVal ){
             printf("Could not read IR values \n");
             exit(0);
         }
-        printf("TE Test 10 \n");
 
         /* Calculate To */
         calc_to(ta, vcp);
-        printf("TE Test 20 \n");
 
         fd = open(mlxFifo, O_WRONLY);
         write(fd, temperaturesInt, sizeof(temperaturesInt));
