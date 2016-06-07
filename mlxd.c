@@ -554,6 +554,7 @@ calc_to(float ta,  int vcp)
     int cal_a0_l_val = EEPROM[CAL_A0_L];
     int cal_a0_scale_val = EEPROM[CAL_A0_SCALE];
     int cal_delta_a_scale_val = EEPROM[CAL_DELTA_A_SCALE];
+
     printf("CAL_EMIS_H: %d \n", EEPROM[CAL_EMIS_H]);
     printf("CAL_EMIS_L: %d \n", EEPROM[CAL_EMIS_L]);
     printf("CAL_ACOMMON_H: %d \n", EEPROM[CAL_ACOMMON_H]);
@@ -565,7 +566,7 @@ calc_to(float ta,  int vcp)
     printf("CAL_ACP_H: %d \n", EEPROM[CAL_ACP_H]);
     printf("CAL_ACP_L: %d \n", EEPROM[CAL_ACP_L]);
     printf("CAL_BCP: %d \n", EEPROM[CAL_BCP]);
-    printf("CAL_TGC: %d \n", (signed char) EEPROM[CAL_TGC]);
+    printf("CAL_TGC: %d \n", EEPROM[CAL_TGC]);
 
     //Calculate variables from EEPROM
     float emissivity = (256 * EEPROM[CAL_EMIS_H] + EEPROM[CAL_EMIS_L])
@@ -626,12 +627,12 @@ calc_to(float ta,  int vcp)
 
 
 
-        alpha_ij[i] = ((256 * cal_a0_h_val + cal_a0_l_val)
+        alpha_ij[i] = (float) ((256 * cal_a0_h_val + cal_a0_l_val)
                 / pow(2, cal_a0_scale_val));
         printf("alpha_ij %d: %f \n", i, alpha_ij[i]);
-        alpha_ij[i] += (EEPROM[0x80 + i] / pow(2, cal_delta_a_scale_val));
+        alpha_ij[i] += (float) (EEPROM[0x80 + i] / pow(2, cal_delta_a_scale_val));
         printf("alpha_ij %d: %f \n", i, alpha_ij[i]);
-        alpha_ij[i] = alpha_ij[i] / pow(2, 3 - resolution);
+        alpha_ij[i] = (float) alpha_ij[i] / pow(2, 3 - resolution);
         printf("alpha_ij %d: %f \n", i, alpha_ij[i]);
         v_ir_norm = v_ir_tgc_comp / (alpha_ij[i] - tgc * alpha_cp);
         printf("v_ir_norm %d: %f \n", i, v_ir_norm);
