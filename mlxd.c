@@ -200,12 +200,34 @@ main (int argc, char **argv)
             exit(0);
         }
 
-        /* Calculate To */
-        calc_to(ta, vcp);
+        for ( i = 0; i < 4; i++ ) {
+            for ( j = 0; j < 16; j++ ) {
+
+                x = ((j * 4) + i); /* index */
+                vir = ( ir_pixels[x*2+1] << 8 ) | ir_pixels[x*2];
+                ai = (signed char)EEPROM[x];
+                bi = (signed char)EEPROM[0x40 + x];
+                delta_alpha = EEPROM[0x80 + x];
+
+                /* Calculate To */
+
+                vcp_off_comp = (float)vcp - ( acp + (bcp / pow(2,EEPROM[217])) * (ta - 25.0)); //256
+                vir_off_comp = (float)vir - ( ai + (bi / pow(2,EEPROM[217])) * (ta - 25.0)); //* 256
+                vir_tgc_comp = vir_off_comp - (tgc / 32) * vcp_off_comp;
+                vir_compensated = vir_tgc_comp / epsilon;
+                alpha = ((alpha0 - (tgc / 32.0) * alphacp) / pow(2, alpha0_scale)) + delta_alpha / pow(2, delta_alpha_scale);
+                to = pow(((vir_compensated / alpha) + pow((ta + 273.15), 4)), 1/4.0) - 273.15;
+                temperaturesInt[x] = (unsigned short)((to + 273.15) * 100.0) ; //give back as Kelvin (hundtredths of degree) so it can be unsigned...
+                temperatures[x] = to;
+
+            }
+
+        }
 
         fd = open(mlxFifo, O_WRONLY);
         write(fd, temperaturesInt, sizeof(temperaturesInt));
         close(fd);
+        //printf("Updated Temperatures!\n");
         usleep(100000);
     } while (1);
 
@@ -621,10 +643,10 @@ calc_to(float ta,  int vcp)
         b_ij[i] = b_ij[i] / (pow(2, b_i_scale) * pow(2, (3 - resolution)));
         //printf("b_ij %d: %f \n", i, b_ij[i]);
 
-        v_ir_off_comp = (irData[i] * 1000) - (a_ij[i] + b_ij[i] * (ta - 25.0));
-        printf("v_ir_off_comp %d: %f \n", i, v_ir_off_comp);
+        v_ir_off_comp = irData[i] - (a_ij[i] + b_ij[i] * (ta - 25.0));
+        //printf("v_ir_off_comp %d: %f \n", i, v_ir_off_comp);
         v_ir_tgc_comp = v_ir_off_comp - tgc * v_cp_off_comp;
-        printf("v_ir_tgc_comp %d: %f \n", i, v_ir_tgc_comp);
+        //printf("v_ir_tgc_comp %d: %f \n", i, v_ir_tgc_comp);
 
         val0 = (256.0 * cal_a0_h_val + cal_a0_l_val);
         val1 = pow(cal_a0_scale_val, 2);
@@ -645,8 +667,8 @@ calc_to(float ta,  int vcp)
         //printf("v_ir_comp %d: %f \n", i, v_ir_comp);
         temperatures[i] = pow((v_ir_comp + pow((ta + 273.15), 4)), 1/4.0) - 273.15;
         temperaturesInt[i] = (unsigned short)((temperatures[i] + 273.15) * 100.0);
-        printf("TE Test Temperatures index: %d value: %f \n", i, temperatures[i]);
-        printf("TE Test TemperaturesInt index: %d value: %d \n", i, temperaturesInt[i]);
+        //printf("TE Test Temperatures index: %d value: %f \n", i, temperatures[i]);
+        //printf("TE Test TemperaturesInt index: %d value: %d \n", i, temperaturesInt[i]);
     }
 }
 
