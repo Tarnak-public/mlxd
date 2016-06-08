@@ -510,7 +510,7 @@ mlx90621_ta()
 
 	if (k_t1 >= 32768.0)
 		k_t1 -= 65536.0;
-	k_t1 /= (pow(2, k_t1_scale) * pow(2, (3 - resolution));
+	k_t1 /= (pow(2, k_t1_scale) * pow(2, (3 - resolution)));
 
 	if (k_t2 >= 32768.0)
 		k_t2 -= 65536.0;
