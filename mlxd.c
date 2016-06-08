@@ -647,9 +647,10 @@ calc_to(float ta,  int vcp)
         val0 = pow(val0, 4);
         val0 = v_ir_comp + val0;
         val0 = pow(val0, 1/4.0);
+        printf("test temp eq index: %d value: %f \n", i, pow((v_ir_comp + pow((ta + 273.15), 4)), 1/4.0) - 273.15)
         temperatures[i] = val0 - 273.15;
         temperaturesInt[i] = (unsigned short)((temperatures[i] + 273.15) * 100.0);
-        //printf("TE Test Temperatures index: %d value: %f \n", i, temperatures[i]);
+        printf("TE Test Temperatures index: %d value: %f \n", i, temperatures[i]);
         printf("TE Test TemperaturesInt index: %d value: %d \n", i, temperaturesInt[i]);
     }
 }
