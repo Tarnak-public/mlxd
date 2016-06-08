@@ -624,7 +624,7 @@ calc_to(float ta,  int vcp)
         v_ir_off_comp = irData[i] - (a_ij[i] + b_ij[i] * (ta - 25.0));
         printf("v_ir_off_comp %d: %f \n", i, v_ir_off_comp);
         v_ir_tgc_comp = v_ir_off_comp - tgc * v_cp_off_comp;
-        //printf("v_ir_tgc_comp %d: %f \n", i, v_ir_tgc_comp);
+        printf("v_ir_tgc_comp %d: %f \n", i, v_ir_tgc_comp);
 
         val0 = (256.0 * cal_a0_h_val + cal_a0_l_val);
         val1 = pow(cal_a0_scale_val, 2);
@@ -643,9 +643,8 @@ calc_to(float ta,  int vcp)
         //printf("v_ir_norm %d: %f \n", i, v_ir_norm);
         v_ir_comp = v_ir_norm / emissivity;
         //printf("v_ir_comp %d: %f \n", i, v_ir_comp);
-        temperatures[i] = pow((v_ir_comp + pow((ta + 273.15), 4)), 1/4.0)
-                - 273.15;
-        temperaturesInt[i] = (unsigned short)((temperatures[i] + 273.15) * 100.0) ;
+        temperatures[i] = pow((v_ir_comp + pow((ta + 273.15), 4)), 1/4.0) - 273.15;
+        temperaturesInt[i] = (unsigned short)((temperatures[i] + 273.15) * 100.0);
         //printf("TE Test Temperatures index: %d value: %f \n", i, temperatures[i]);
         printf("TE Test TemperaturesInt index: %d value: %d \n", i, temperaturesInt[i]);
     }
