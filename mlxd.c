@@ -627,8 +627,7 @@ calc_to(float ta,  int vcp)
 
         printf("test1 %d: %9.6f \n", i, (256.0 * cal_a0_h_val + cal_a0_l_val));
         printf("test2 %d: %9.6f \n", i, pow(cal_a0_scale_val, 2));
-        alpha_ij[i] = (float) ((256.0 * cal_a0_h_val + cal_a0_l_val)
-                / pow(2, cal_a0_scale_val));
+        alpha_ij[i] = (256.0 * cal_a0_h_val + cal_a0_l_val) / pow(2, cal_a0_scale_val);
         printf("alpha_ij %d: %9.6f \n", i, alpha_ij[i]);
         printf("EEPROM[0x80 + i] %d: %d \n", i, EEPROM[0x80 + i]);
         alpha_ij[i] += (float) (EEPROM[0x80 + i] / pow(2, cal_delta_a_scale_val));
