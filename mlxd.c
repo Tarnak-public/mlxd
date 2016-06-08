@@ -645,7 +645,7 @@ calc_to(float ta,  int vcp)
         //printf("v_ir_comp %d: %f \n", i, v_ir_comp);
         val0 = (ta + 273.15);
         val0 = pow(val0, 4);
-        val0 = v_ir_comp + val0
+        val0 = v_ir_comp + val0;
         val0 = pow(val0, 1/4.0);
         temperatures[i] = val0 - 273.15;
         temperaturesInt[i] = (unsigned short)((temperatures[i] + 273.15) * 100.0);
