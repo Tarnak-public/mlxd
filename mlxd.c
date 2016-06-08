@@ -579,7 +579,7 @@ calc_to(float ta,  int vcp)
     float b_cp = (float) EEPROM[CAL_BCP];
     float tgc = (signed char) EEPROM[CAL_TGC];
     float v_cp_off_comp = (float) vcp - (a_cp + b_cp * (ta - 25.0));
-    float v_ir_off_comp, v_ir_tgc_comp, v_ir_norm, v_ir_comp;
+    float v_ir_off_comp, v_ir_tgc_comp, v_ir_norm, v_ir_comp, val0, val1;
     if (a_common >= 32768)
         a_common -= 65536;
     if (a_cp >= 32768.0)
@@ -624,12 +624,12 @@ calc_to(float ta,  int vcp)
         v_ir_tgc_comp = v_ir_off_comp - tgc * v_cp_off_comp;
         printf("v_ir_tgc_comp %d: %f \n", i, v_ir_tgc_comp);
 
-
-        printf("test1 %d: %9.6f \n", i, (256.0 * cal_a0_h_val + cal_a0_l_val));
-        printf("test2 %d: %9.6f \n", i, pow(cal_a0_scale_val, 2));
-        alpha_ij[i] = (256.0 * cal_a0_h_val + cal_a0_l_val) / pow(2, cal_a0_scale_val);
+        val0 = (256.0 * cal_a0_h_val + cal_a0_l_val);
+        val1 = pow(cal_a0_scale_val, 2);
+        printf("test1 %d: %9.6f \n", i, val0);
+        printf("test2 %d: %9.6f \n", i, val1);
+        alpha_ij[i] = val0 / val1;
         printf("alpha_ij %d: %9.6f \n", i, alpha_ij[i]);
-        printf("alpha_ij %d: %d \n", i, alpha_ij[i]);
         printf("EEPROM[0x80 + i] %d: %d \n", i, EEPROM[0x80 + i]);
         alpha_ij[i] += (float) (EEPROM[0x80 + i] / pow(2, cal_delta_a_scale_val));
         printf("alpha_ij %d: %9.6f \n", i, alpha_ij[i]);
