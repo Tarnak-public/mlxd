@@ -647,7 +647,7 @@ calc_to(float ta,  int vcp)
                 - 273.15;
         temperaturesInt[i] = (unsigned short)((temperatures[i] + 273.15) * 100.0) ;
         //printf("TE Test Temperatures index: %d value: %f \n", i, temperatures[i]);
-        //printf("TE Test TemperaturesInt index: %d value: %d \n", i, temperaturesInt[i]);
+        printf("TE Test TemperaturesInt index: %d value: %d \n", i, temperaturesInt[i]);
     }
 }
 
