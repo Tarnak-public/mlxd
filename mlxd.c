@@ -506,15 +506,15 @@ mlx90621_ta()
 
 	if (v_th >= 32768.0)
 		v_th -= 65536.0;
-	v_th = v_th / pow((3 - resolution), 2);
+	v_th = v_th / pow((2, 3 - resolution));
 
 	if (k_t1 >= 32768.0)
 		k_t1 -= 65536.0;
-	k_t1 /= (pow(k_t1_scale, 2) * pow((3 - resolution), 2));
+	k_t1 /= (pow(2, k_t1_scale) * pow(2, (3 - resolution)));
 
 	if (k_t2 >= 32768.0)
 		k_t2 -= 65536.0;
-	k_t2 /= (pow(k_t2_scale, 2) * pow((3 - resolution), 2));
+	k_t2 /= (pow(2, k_t2_scale) * pow(2, (3 - resolution)));
 
 	return ((-k_t1 + sqrt(pow(k_t1, 2) - (4 * k_t2 * (v_th - (float) ptat))))
 			/ (2 * k_t2)) + 25.0;
@@ -572,7 +572,7 @@ calc_to(float ta,  int vcp)
     int a_common = 56 * EEPROM[CAL_ACOMMON_H]
             + EEPROM[CAL_ACOMMON_L];
     float alpha_cp = (256 * EEPROM[CAL_alphaCP_H] + EEPROM[CAL_alphaCP_L])
-            / (pow(cal_a0_scale_val, 2) * pow((3 - resolution), 2));
+            / (pow(2, cal_a0_scale_val) * pow(2, (3 - resolution)));
     int a_i_scale = (EEPROM[CAL_AI_SCALE] & 0xF0) >> 4;
     int b_i_scale = EEPROM[CAL_BI_SCALE] & 0x0F;
     float a_cp = (float) 256 * EEPROM[CAL_ACP_H] + EEPROM[CAL_ACP_L];
@@ -584,10 +584,10 @@ calc_to(float ta,  int vcp)
         a_common -= 65536;
     if (a_cp >= 32768.0)
         a_cp -= 65536.0;
-    a_cp /= pow((3 - resolution), 2);
+    a_cp /= pow(2, (3 - resolution));
     if (b_cp > 127.0)
         b_cp -= 256.0;
-    b_cp /= (pow(b_i_scale, 2) * pow((3 - resolution), 2));
+    b_cp /= (pow(2, b_i_scale) * pow(2, (3 - resolution)));
     if (tgc > 127.0)
         tgc -= 256.0;
     tgc /= 32.0;
@@ -610,14 +610,14 @@ calc_to(float ta,  int vcp)
 */
     for (i = 0; i < 64; i++) {
         //printf("EEPROM[i] %d: %d \n", i, EEPROM[i]);
-        a_ij[i] = ((float) a_common + EEPROM[i] * pow(a_i_scale, 2))
-                / pow((3 - resolution), 2);
+        a_ij[i] = ((float) a_common + EEPROM[i] * pow(2, a_i_scale))
+                / pow(2, (3 - resolution));
         //printf("a_ij %d: %f \n", i, a_ij[i]);
         //printf("EEPROM[0x40 + i] %d: %d \n", i, EEPROM[0x40 + i]);
         b_ij[i] = EEPROM[0x40 + i];
         if (b_ij[i] > 127)
             b_ij[i] -= 256;
-        b_ij[i] = b_ij[i] / (pow(b_i_scale, 2) * pow((3 - resolution), 2));
+        b_ij[i] = b_ij[i] / (pow(2, b_i_scale) * pow(2, (3 - resolution)));
         //printf("b_ij %d: %f \n", i, b_ij[i]);
         v_ir_off_comp = irData[i] - (a_ij[i] + b_ij[i] * (ta - 25.0));
         //printf("v_ir_off_comp %d: %f \n", i, v_ir_off_comp);
@@ -628,12 +628,12 @@ calc_to(float ta,  int vcp)
         //printf("test1 %d: %9.6f \n", i, (256.0 * cal_a0_h_val + cal_a0_l_val));
         //printf("test2 %d: %9.6f \n", i, pow(cal_a0_scale_val, 2));
         alpha_ij[i] = (float) ((256.0 * cal_a0_h_val + cal_a0_l_val)
-                / pow(cal_a0_scale_val, 2));
+                / pow(2, cal_a0_scale_val));
         //printf("alpha_ij %d: %9.6f \n", i, alpha_ij[i]);
         //printf("EEPROM[0x80 + i] %d: %d \n", i, EEPROM[0x80 + i]);
-        alpha_ij[i] += (float) (EEPROM[0x80 + i] / pow(cal_delta_a_scale_val, 2));
+        alpha_ij[i] += (float) (EEPROM[0x80 + i] / pow(2, cal_delta_a_scale_val));
         //printf("alpha_ij %d: %9.6f \n", i, alpha_ij[i]);
-        alpha_ij[i] = (float) alpha_ij[i] / pow(3 - resolution, 2);
+        alpha_ij[i] = (float) alpha_ij[i] / pow(2, (3 - resolution));
         //printf("alpha_ij %d: %9.6f \n", i, alpha_ij[i]);
         v_ir_norm = v_ir_tgc_comp / (alpha_ij[i] - tgc * alpha_cp);
         //printf("v_ir_norm %d: %f \n", i, v_ir_norm);
