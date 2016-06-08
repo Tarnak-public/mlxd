@@ -632,7 +632,7 @@ calc_to(float ta,  int vcp)
         printf("alpha_ij %d: %9.6f \n", i, alpha_ij[i]);
         val3 = EEPROM[0x80 + i];
         printf("EEPROM[0x80 + i] %d: %9.6f \n", i, val3);
-        printf("pow(2, cal_delta_a_scale_val) %d: %9.6f ", i, pow(2, cal_delta_a_scale_val));
+        printf("pow(2, cal_delta_a_scale_val) %d: %9.6f \n", i, pow(2, cal_delta_a_scale_val));
         alpha_ij[i] += val3 / pow(2, cal_delta_a_scale_val);
         printf("alpha_ij %d: %9.6f \n", i, alpha_ij[i]);
         alpha_ij[i] = alpha_ij[i] / pow(2, (3 - resolution));
@@ -644,8 +644,8 @@ calc_to(float ta,  int vcp)
         temperatures[i] = pow((v_ir_comp + pow((ta + 273.15), 4)), 1/4.0)
                 - 273.15;
         temperaturesInt[i] = (unsigned short)((temperatures[i] + 273.15) * 100.0) ;
-        //printf("TE Test Temperatures index: %d value: %f \n", i, temperatures[i]);
-        //printf("TE Test TemperaturesInt index: %d value: %d \n", i, temperaturesInt[i]);
+        printf("TE Test Temperatures index: %d value: %f \n", i, temperatures[i]);
+        printf("TE Test TemperaturesInt index: %d value: %d \n", i, temperaturesInt[i]);
     }
 }
 
