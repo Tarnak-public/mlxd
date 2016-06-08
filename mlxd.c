@@ -660,7 +660,7 @@ mlx90621_ir_read()
         0x02, // command
         0x00, // start address
         0x01, // address step
-        0x40  // number of reads
+        0x20  // number of reads
     };
     int i, j;
     bcm2835_i2c_begin();
