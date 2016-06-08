@@ -506,7 +506,7 @@ mlx90621_ta()
 
 	if (v_th >= 32768.0)
 		v_th -= 65536.0;
-	v_th = v_th / pow((2, 3 - resolution));
+	v_th = v_th / pow((2, (3 - resolution));
 
 	if (k_t1 >= 32768.0)
 		k_t1 -= 65536.0;
