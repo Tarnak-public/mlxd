@@ -621,7 +621,7 @@ calc_to(float ta,  int vcp)
         b_ij[i] = b_ij[i] / (pow(2, b_i_scale) * pow(2, (3 - resolution)));
         //printf("b_ij %d: %f \n", i, b_ij[i]);
 
-        v_ir_off_comp = (irData[i] * 100) - (a_ij[i] + b_ij[i] * (ta - 25.0));
+        v_ir_off_comp = irData[i] - (a_ij[i] + b_ij[i] * (ta - 25.0));
         printf("v_ir_off_comp %d: %f \n", i, v_ir_off_comp);
         v_ir_tgc_comp = v_ir_off_comp - tgc * v_cp_off_comp;
         //printf("v_ir_tgc_comp %d: %f \n", i, v_ir_tgc_comp);
