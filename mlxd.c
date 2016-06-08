@@ -612,6 +612,7 @@ calc_to(float ta,  int vcp)
         printf("EEPROM[i] %d: %d \n", i, EEPROM[i]);
         a_ij[i] = ((float) a_common + EEPROM[i] * pow(2, a_i_scale))
                 / pow(2, (3 - resolution));
+        a_ij[i] += i;
         printf("a_ij %d: %f \n", i, a_ij[i]);
         printf("EEPROM[0x40 + i] %d: %d \n", i, EEPROM[0x40 + i]);
         b_ij[i] = EEPROM[0x40 + i];
